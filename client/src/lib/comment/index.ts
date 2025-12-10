@@ -1,9 +1,11 @@
+import { useAuthStore } from "@/store/auth-store";
 import axios from "axios";
 
 class Comment {
   private server_api = import.meta.env.VITE_SERVER_ROOT_API;
-  private token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MWZmNWZjZDhkMjQyNTQ0NGNkOGRmOCIsImlhdCI6MTc2NDQxNjY4M30.TZz6v7I6DGzBIGVZ3tze_RPzA9yfmiRd7NV0U9VbiJY";
+  private get token() {
+    return useAuthStore.getState().token;
+  }
 
   // get comment
   async getComment(taskId: any) {

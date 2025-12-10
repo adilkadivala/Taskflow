@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 interface AboutMe {
   id: string | null;
@@ -24,9 +23,29 @@ interface AboutMe {
   reset: () => void;
 }
 
-export const useAboutMeStore = create<AboutMe>()(
-  persist(
-    (set) => ({
+export const useAboutMeStore = create<AboutMe>((set) => ({
+  id: null,
+  name: null,
+  email: null,
+
+  role: null,
+  teams: null,
+  soloTasks: null,
+  assignedTasks: null,
+
+  setMyInfo: (data) =>
+    set({
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      role: data.role,
+      teams: data.teams,
+      soloTasks: data.soloTasks,
+      assignedTasks: data.assignedTasks,
+    }),
+
+  reset: () =>
+    set({
       id: null,
       name: null,
       email: null,
@@ -34,32 +53,5 @@ export const useAboutMeStore = create<AboutMe>()(
       teams: null,
       soloTasks: null,
       assignedTasks: null,
-
-      setMyInfo: (data) => set(data),
-
-      reset: () =>
-        set({
-          id: null,
-          name: null,
-          email: null,
-          role: null,
-          teams: null,
-          soloTasks: null,
-          assignedTasks: null,
-        }),
     }),
-
-    {
-      name: "aboutme",
-      partialize: (state) => ({
-        id: state.id,
-        name: state.name,
-        email: state.email,
-        role: state.role,
-        teams: state.teams,
-        soloTasks: state.soloTasks,
-        assignedTasks: state.assignedTasks,
-      }),
-    }
-  )
-);
+}));

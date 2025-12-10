@@ -12,56 +12,40 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { tasksApies } from "@/lib/task";
+import { useTaskStore } from "@/store/task";
 import { Edit, MoreHorizontal, Search, Trash2 } from "lucide-react";
-import { useState } from "react";
-
-const mockTasks = [
-  {
-    id: "1",
-    title: "Design landing page",
-    description: "Create mockups for the new landing page",
-    priority: "high",
-    status: "in-progress",
-    dueDate: "2024-12-20",
-    assigned: ["John Doe"],
-  },
-  {
-    id: "2",
-    title: "Fix login bug",
-    description: "Users unable to login with email",
-    priority: "critical",
-    status: "todo",
-    dueDate: "2024-12-15",
-    assigned: ["Jane Smith"],
-  },
-  {
-    id: "3",
-    title: "Update documentation",
-    description: "Add API documentation for new endpoints",
-    priority: "low",
-    status: "done",
-    dueDate: "2024-12-10",
-    assigned: ["John Doe", "Jane Smith"],
-  },
-  {
-    id: "4",
-    title: "Fix login bug",
-    description: "Users unable to login with email",
-    priority: "critical",
-    status: "todo",
-    dueDate: "2024-12-15",
-    assigned: ["Jane Smith"],
-  },
-];
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function TasksPage() {
-  const [openSheet, setOpenSheet] = useState(false);
+  const { tasks, getTasks } = useTaskStore();
+
+  const [openSheet, setOpenSheet] = useState<boolean>(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
 
   const onTaskClick = (task: any) => {
-    setSelectedTask(task);
-    setOpenSheet(true);
+    return () => {
+      setSelectedTask(task);
+      setOpenSheet(true);
+    };
   };
+
+  // delete
+  const deleteTask = async (taskId: string) => {
+    const response = await tasksApies.deleteTask(taskId);
+    if (response.ok === true) {
+      toast.success("task deleted successfully");
+      await getTasks();
+    }
+    if (response.status === 403) {
+      toast.success("task not deleted");
+    }
+  };
+
+  useEffect(() => {
+    getTasks();
+  }, []);
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
@@ -83,13 +67,13 @@ export default function TasksPage() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-3.5 flex-wrap">
-        {mockTasks.map((task) => (
+        {tasks.map((task) => (
           <Card
-            key={task.id}
-            onClick={() => onTaskClick(task)}
+            key={task._id}
+            onClick={onTaskClick(task)}
             className="hover:shadow-md transition-shadow cursor-pointer"
           >
-            <CardContent className="p-4">
+            <CardContent>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -108,7 +92,6 @@ export default function TasksPage() {
                     <span>
                       Due: {new Date(task.dueDate).toLocaleDateString()}
                     </span>
-                    <span>Assigned: {task.assigned.join(", ")}</span>
                   </div>
                 </div>
                 <DropdownMenu>
@@ -117,12 +100,18 @@ export default function TasksPage() {
                       <MoreHorizontal className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
+                  <DropdownMenuContent align="end" side="right">
+                    <DropdownMenuItem onClick={onTaskClick(task)}>
                       <Edit className="w-4 h-4 mr-2" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">
+                    <DropdownMenuItem
+                      className="text-red-600"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteTask(task._id);
+                      }}
+                    >
                       <Trash2 className="w-4 h-4 mr-2" />
                       Delete
                     </DropdownMenuItem>

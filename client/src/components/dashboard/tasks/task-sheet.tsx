@@ -6,111 +6,135 @@ import {
   SheetFooter,
   SheetClose,
 } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Edit2, Trash2, CalendarDays, User, Tag } from "lucide-react";
+import { tasksApies } from "@/lib/task";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useForm } from "@/hooks/use-form-data";
+import type { TaskType } from "@/lib/types";
+import { useTaskStore } from "@/store/task";
+import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import { useEffect } from "react";
 
 export function TaskSheet({ open, onClose, task }: any) {
   if (!task) return null;
 
+  const { getTasks, addTask } = useTaskStore();
+
+  const { formData, bindInput, bindSelect, resetForm, setFormValues } =
+    useForm<TaskType>({
+      title: "",
+      description: "",
+      priority: "Low",
+      status: "Todo",
+      dueDate: "",
+    });
+
+  // update
+
+  const handleForm = async (taskId: string) => {
+    const response = await tasksApies.updateTask(taskId, formData);
+    console.log(response);
+    if (response.ok === true) {
+      addTask(response.data.data);
+      await getTasks();
+      resetForm();
+      toast.success("task updated!");
+    }
+    if (response.ok === false) {
+      toast.error(response.message);
+      toast.error(response.status);
+    }
+  };
+
+  useEffect(() => {
+    if (task) {
+      setFormValues({
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        priority: task.priority,
+        dueDate: task.dueDate?.slice(0, 10),
+      });
+    }
+  }, [task]);
+
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-md p-0">
-        {/* HEADER */}
-        <div className="p-6 border-b">
-          <SheetHeader>
-            <SheetTitle className="flex items-center justify-between gap-2 text-xl font-semibold">
-              {task.title}
-              <Badge
-                className={
-                  task.priority === "critical"
-                    ? "bg-red-100 text-red-700"
-                    : task.priority === "high"
-                    ? "bg-orange-100 text-orange-700"
-                    : task.priority === "medium"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-green-100 text-green-700"
-                }
-              >
-                {task.priority}
-              </Badge>
-            </SheetTitle>
-          </SheetHeader>
-
-          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-            {task.description}
-          </p>
-        </div>
-
-        {/* DETAILS */}
-        <div className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
-          {/* Status */}
-          <div>
-            <h3 className="text-sm font-medium mb-1 flex items-center gap-2">
-              <Tag className="w-4 h-4 text-muted-foreground" />
-              Status
-            </h3>
-            <Badge
-              className={
-                task.status === "done"
-                  ? "bg-green-100 text-green-700"
-                  : task.status === "in-progress"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-gray-100 text-gray-700"
-              }
-            >
-              {task.status === "in-progress" ? "In Progress" : task.status}
-            </Badge>
-          </div>
-
-          <Separator />
-
-          {/* Due Date */}
-          <div>
-            <h3 className="text-sm font-medium mb-1 flex items-center gap-2">
-              <CalendarDays className="w-4 h-4 text-muted-foreground" />
-              Due Date
-            </h3>
-            <p className="text-sm">
-              {new Date(task.dueDate).toLocaleDateString()}
-            </p>
-          </div>
-
-          <Separator />
-
-          {/* Assigned */}
-          <div>
-            <h3 className="text-sm font-medium mb-1 flex items-center gap-2">
-              <User className="w-4 h-4 text-muted-foreground" />
-              Assigned To
-            </h3>
-            <p className="text-sm">{task.assigned.join(", ")}</p>
-          </div>
-
-          <Separator />
-
-          {/* Description Section */}
-          <div>
-            <h3 className="text-sm font-medium mb-2">Detailed Description</h3>
-            <div className="rounded-md border p-3 bg-muted/20 text-sm leading-relaxed">
-              {task.description}
+      <SheetContent className="w-full sm:max-w-md p-0 h-full">
+        <SheetHeader>
+          <SheetTitle>About the task</SheetTitle>
+        </SheetHeader>
+        <Separator className="" />
+        <div className="flex flex-col gap-4 overflow-y-auto px-4 items-center h-full text-sm">
+          <form className="flex flex-col gap-4 justify-center h-full w-full">
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="title">Title</Label>
+              <Input {...bindInput("title")} name="title" />
             </div>
-          </div>
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="description">Description</Label>
+              <Textarea {...bindInput("description")} name="description" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="status">Status</Label>
+                <Select {...bindSelect("status")}>
+                  <SelectTrigger name="status" id="status" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Todo">To Do</SelectItem>
+                    <SelectItem value="Progress">In Progress</SelectItem>
+                    <SelectItem value="Completed">Done</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="priority">Priority</Label>
+                <Select {...bindSelect("priority")}>
+                  <SelectTrigger
+                    name="priority"
+                    id="priority"
+                    className="w-full"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Low">Low</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="High">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="reviewer">Due Date</Label>
+              <Input
+                id="dueDate"
+                {...bindInput("dueDate")}
+                name="dueDate"
+                type="date"
+              />
+            </div>
+          </form>
         </div>
-
-        {/* FOOTER ACTIONS */}
-        <SheetFooter className="border-t mt-4 p-4 flex justify-between">
-          <Button variant="ghost" className="flex items-center gap-2">
-            <Edit2 className="w-4 h-4" />
-            Edit
-          </Button>
-
-          <Button variant="destructive" className="flex items-center gap-2">
-            <Trash2 className="w-4 h-4" />
-            Delete
-          </Button>
-
+        <SheetFooter>
+          <SheetClose asChild>
+            <Button type="submit" onClick={() => handleForm(task._id)}>
+              Update
+            </Button>
+          </SheetClose>
           <SheetClose asChild>
             <Button variant="outline">Close</Button>
           </SheetClose>

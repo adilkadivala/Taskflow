@@ -9,8 +9,6 @@ export function SocialAuthHandler() {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
 
-    console.log("OAuth token from URL:", token);
-
     if (token) {
       setAuth(token);
       window.history.replaceState({}, "", "/dashboard");

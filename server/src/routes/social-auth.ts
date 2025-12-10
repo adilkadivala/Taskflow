@@ -47,9 +47,6 @@ passport.use(
         account: { provider: "google" },
       });
 
-      console.log("token", token);
-      console.log("user", user);
-
       return done(null, { token, user });
     }
   )

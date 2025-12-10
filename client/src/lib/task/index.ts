@@ -1,15 +1,17 @@
 import axios from "axios";
-import type { Taks } from "../types";
+import type { TaskType } from "../types";
+import { useAuthStore } from "@/store/auth-store";
 
 class Task {
   private server_api = import.meta.env.VITE_SERVER_ROOT_API;
-  private token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MWZmNWZjZDhkMjQyNTQ0NGNkOGRmOCIsImlhdCI6MTc2NDQxNjY4M30.TZz6v7I6DGzBIGVZ3tze_RPzA9yfmiRd7NV0U9VbiJY";
+  private get token() {
+    return useAuthStore.getState().token;
+  }
 
   // get task
   async getAllTask() {
     try {
-      const respnse = await axios.get(
+      const response = await axios.get(
         `${this.server_api}/task/api/v1/get-all-task`,
         {
           headers: {
@@ -17,84 +19,63 @@ class Task {
           },
         }
       );
-      if (respnse.status === 200) {
-        return respnse.data;
-      }
-      if (respnse.status === 403) {
-        return { msg: "no tasks availabel to dispay" };
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // create task
-  async createTask(taskBody: Taks) {
+  async createTask(taskBody: TaskType) {
     try {
       const response = await axios.post(
         `${this.server_api}/task/api/v1/create-task`,
         { ...taskBody },
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-
-      if (response.status === 200) {
-        return response.data;
-      }
-      if (response.status === 422) {
-        return { message: "incorrect input" };
-      }
-      if (response.status === 409) {
-        return { message: "task already exist" };
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // update task
-  async updateTask(taskId: any) {
+  async updateTask(taskId: string, taskBody: TaskType) {
     try {
       const response = await axios.put(
         `${this.server_api}/task/api/v1/update-task/${taskId}`,
+        { ...taskBody },
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
 
-      if (response.status === 200) {
-        return response.data;
-      }
-      if (response.status === 404) {
-        return { message: "task not available to update" };
-      }
-      if (response.status === 403) {
-        return { message: "you are not authorized to update this task" };
-      }
-      if (response.status === 422) {
-        return { message: "incorrect input" };
-      }
-    } catch (error) {
+      console.log(response);
+
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // delete task
-  async deleteTask(taskId: any) {
+  async deleteTask(taskId: string) {
     try {
       const response = await axios.delete(
         `${this.server_api}/task/api/v1/delete-task/${taskId}`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
 
-      if (response.status === 200) {
-        return response;
-      }
-      if (response.status === 404) {
-        return { message: "task not available to delete" };
-      }
-      if (response.status === 403) {
-        return { message: "you are not authorized to delete this task" };
-      }
-      if (response.status === 402) {
-        return { message: "params not provided" };
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // delete all task
@@ -248,7 +229,7 @@ class Task {
   //  ----------- team -----------------//
 
   // create task
-  async createTeamTask(teamId: any, taskBody: Taks) {
+  async createTeamTask(teamId: any, taskBody: TaskType) {
     try {
       const response = await axios.post(
         `${this.server_api}/task/create-task-of-team/${teamId}`,

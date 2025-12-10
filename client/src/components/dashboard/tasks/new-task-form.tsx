@@ -22,36 +22,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Loader, Plus } from "lucide-react";
+import { tasksApies } from "@/lib/task";
+import type { TaskType } from "@/lib/types";
+import { useTaskStore } from "@/store/task";
+import { toast } from "sonner";
+
+import { useForm } from "@/hooks/use-form-data";
 
 export function NewTaskForm() {
+  const { getTasks, addTask } = useTaskStore();
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const { formData, bindInput, bindSelect, resetForm } = useForm<TaskType>({
     title: "",
     description: "",
-    priority: "medium",
-    status: "todo",
+    priority: "Low",
+    status: "Todo",
     dueDate: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("New task:", formData);
-    setFormData({
-      title: "",
-      description: "",
-      priority: "medium",
-      status: "todo",
-      dueDate: "",
-    });
-    setOpen(false);
-  };
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const response = await tasksApies.createTask(formData);
+
+    if (response.ok) {
+      addTask(response.data);
+      await getTasks();
+      resetForm();
+      setOpen(false);
+      toast.success("task created!");
+    } else {
+      toast.error(response.message);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -73,10 +79,11 @@ export function NewTaskForm() {
           <div className="flex flex-col gap-2">
             <Label htmlFor="title">Task Title *</Label>
             <Input
+              {...bindInput("title")}
               id="title"
+              name="title"
               placeholder="Enter task title"
               value={formData.title}
-              onChange={(e) => handleChange("title", e.target.value)}
               required
             />
           </div>
@@ -84,10 +91,11 @@ export function NewTaskForm() {
           <div className="flex flex-col gap-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
+              {...bindInput("description")}
               id="description"
+              name="description"
               placeholder="Enter task description"
               value={formData.description}
-              onChange={(e) => handleChange("description", e.target.value)}
               rows={3}
             />
           </div>
@@ -95,35 +103,28 @@ export function NewTaskForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 w-full">
             <div className="flex md:flex-col gap-2 w-full">
               <Label htmlFor="priority">Priority</Label>
-              <Select
-                value={formData.priority}
-                onValueChange={(value) => handleChange("priority", value)}
-              >
-                <SelectTrigger id="priority" className="w-full">
+              <Select {...bindSelect("priority")} value={formData.priority}>
+                <SelectTrigger name="priority" id="priority" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent >
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="critical">Critical</SelectItem>
+                <SelectContent>
+                  <SelectItem value="Low">Low</SelectItem>
+                  <SelectItem value="Medium">Medium</SelectItem>
+                  <SelectItem value="High">High</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="flex md:flex-col gap-2 w-full">
               <Label htmlFor="status">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value) => handleChange("status", value)}
-              >
-                <SelectTrigger id="status" className="w-full">
+              <Select {...bindSelect("status")} value={formData.status}>
+                <SelectTrigger name="status" id="status" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todo">To Do</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
+                  <SelectItem value="Todo">To Do</SelectItem>
+                  <SelectItem value="Progress">In Progress</SelectItem>
+                  <SelectItem value="Completed">Done</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -133,9 +134,10 @@ export function NewTaskForm() {
             <Label htmlFor="dueDate">Due Date</Label>
             <Input
               id="dueDate"
+              {...bindInput("dueDate")}
+              name="dueDate"
               type="date"
               value={formData.dueDate}
-              onChange={(e) => handleChange("dueDate", e.target.value)}
             />
           </div>
 
@@ -147,7 +149,9 @@ export function NewTaskForm() {
             >
               Cancel
             </Button>
-            <Button type="submit">Create Task</Button>
+            <Button type="submit">
+              {isLoading ? <Loader className="" /> : "Create Task"}
+            </Button>
           </div>
         </form>
       </DialogContent>

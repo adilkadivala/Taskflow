@@ -13,7 +13,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Activity, LayoutDashboard, ListChecks, Users, Workflow } from "lucide-react";
+import {
+  Activity,
+  LayoutDashboard,
+  ListChecks,
+  Users,
+  Workflow,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { TeamSwitcher } from "./team-switcher";
 import { aboutUserApies } from "@/lib/user";
@@ -66,16 +72,13 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { setMyInfo } = useAboutMeStore();
-  const { name, email } = useAboutMeStore();
+  const { name, email, setMyInfo } = useAboutMeStore();
 
   const aboutMe = async () => {
     const result = await aboutUserApies.aboutMe();
 
     if (result.ok) {
       const detail = result.data.aboutMe.detail;
-
-      console.log(detail);
 
       const payload = {
         id: detail._id,

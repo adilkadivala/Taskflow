@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,37 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { NewTeamForm } from "@/components/dashboard/team/new-team-form";
 import { Link } from "react-router-dom";
+import { useTeamStore } from "@/store/teams";
 
 export default function TeamsPage() {
-  const [teams] = useState([
-    {
-      id: 1,
-      name: "Design Team",
-      members: 5,
-      role: "owner",
-      description: "UI/UX Design & Branding",
-      color: "bg-blue-500",
-    },
-    {
-      id: 2,
-      name: "Development",
-      members: 8,
-      role: "admin",
-      description: "Backend & Frontend Development",
-      color: "bg-purple-500",
-    },
-    {
-      id: 3,
-      name: "Marketing",
-      members: 3,
-      role: "member",
-      description: "Marketing & Growth",
-      color: "bg-green-500",
-    },
-  ]);
+  const { teams, getTeams } = useTeamStore();
+
+  useEffect(() => {
+    getTeams();
+  }, []);
 
   return (
     <div className="flex flex-col gap-6 py-6 px-4 lg:px-6">
@@ -57,9 +34,8 @@ export default function TeamsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <NewTeamForm />
           {teams.map((team) => {
-            console.log("clicked", team.id);
             return (
-              <Link to={`/dashboard/teams/${team.id}`} key={team.id}>
+              <Link to={`/dashboard/teams/${team._id}`} key={team._id}>
                 <Card className="hover:shadow-md transition-shadow">
                   <CardHeader>
                     <div className="flex items-start justify-between">
@@ -69,13 +45,12 @@ export default function TeamsPage() {
                           <CardDescription>{team.description}</CardDescription>
                         </div>
                       </div>
-                      <Badge variant="outline">{team.role}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-4">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
-                        {team.members} members
+                        {team.members.length} members
                       </span>
                       <Button size="sm" variant="outline">
                         View
@@ -86,8 +61,6 @@ export default function TeamsPage() {
               </Link>
             );
           })}
-
-          {/* Add New Team Card */}
         </div>
       </section>
     </div>

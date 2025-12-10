@@ -51,7 +51,7 @@ const createTeam = async (
     await Activity.create({
       userId,
       teamId: team._id,
-      action: "TEAM_CREATED",
+      action: "CREATED",
       details: `Team "${name}" was created`,
     });
 
@@ -74,8 +74,10 @@ const getAllTeams = async (
     // @ts-ignore
     const userId = req.userId;
 
+    console.log(userId);
+
     const teams = await Team.find(
-      { members: { $in: { userId } } },
+      { members: { $in: [ userId ] } },
       {
         name: true,
         description: true,

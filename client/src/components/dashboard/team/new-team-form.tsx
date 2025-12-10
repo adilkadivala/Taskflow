@@ -16,29 +16,36 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
+import { useForm } from "@/hooks/use-form-data";
+import type { TeamType } from "@/lib/types";
+import { teamApies } from "@/lib/team";
+import { useTeamStore } from "@/store/teams";
+import { toast } from "sonner";
 
 export function NewTeamForm() {
-  const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const { getTeams, addTeam } = useTeamStore();
+  const [open, setOpen] = useState<boolean>(false);
+  const { formData, bindInput, resetForm } = useForm<TeamType>({
     name: "",
     description: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("New team:", formData);
-    setFormData({
-      name: "",
-      description: "",
-    });
-    setOpen(false);
-  };
 
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    const response = await teamApies.createTeam(formData);
+
+    if (response.ok === true) {
+      addTeam(response.data);
+      await getTeams();
+      setOpen(!open);
+      toast.success(response.message);
+      resetForm();
+    }
+    if (response.ok === false) {
+      setOpen(false);
+      toast.success(response.message);
+    }
   };
 
   return (
@@ -64,10 +71,10 @@ export function NewTeamForm() {
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">Team Name *</Label>
             <Input
+              {...bindInput("name")}
               id="name"
               placeholder="Enter team name"
               value={formData.name}
-              onChange={(e) => handleChange("name", e.target.value)}
               required
             />
           </div>
@@ -76,9 +83,9 @@ export function NewTeamForm() {
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
+              {...bindInput("description")}
               placeholder="Enter team description"
               value={formData.description}
-              onChange={(e) => handleChange("description", e.target.value)}
               rows={3}
             />
           </div>
@@ -91,7 +98,9 @@ export function NewTeamForm() {
             >
               Cancel
             </Button>
-            <Button type="submit">Create Team</Button>
+            <Button type="submit" onClick={handleSubmit}>
+              Create Team
+            </Button>
           </div>
         </form>
       </DialogContent>

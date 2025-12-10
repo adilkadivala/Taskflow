@@ -4,7 +4,7 @@ import SignIn from "@/auth/sign-in";
 import SignUp from "@/auth/sign-up";
 import Dashboard from "@/dashboard";
 import DashLayout from "@/dashboard/dash-layout";
-import TaskManagement from "@/dashboard/task-management";
+import TaskManagement from "@/dashboard/tasks";
 import LandingPage from "@/pages/landing-page";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuthStore } from "@/store/auth-store";

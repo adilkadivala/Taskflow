@@ -4,14 +4,12 @@ import axios from "axios";
 class User {
   private server_api = import.meta.env.VITE_SERVER_ROOT_API;
 
-  // always get latest token
   private get token() {
     return useAuthStore.getState().token;
   }
 
   // about me
   async aboutMe() {
-    console.log(this.token);
     try {
       const response = await axios.get(
         `${this.server_api}/about_user/api/v1/about-me`,
