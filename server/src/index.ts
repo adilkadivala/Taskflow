@@ -17,7 +17,7 @@ app.use(router);
 app.use(errorMiddleware);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("<p>hello from server</p>");
+  return res.json("hello from server");
 });
 
 connectDB
@@ -31,3 +31,5 @@ connectDB
   .catch((err) => {
     console.log(err);
   });
+
+export default app;
