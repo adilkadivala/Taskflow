@@ -1,7 +1,7 @@
 import env from "dotenv";
 env.config();
 
-import express from "express";
+import express, { Request, Response } from "express";
 import { connectDB } from "./config/db";
 import cors from "cors";
 import router from "./routes";
@@ -16,6 +16,10 @@ app.use(cors());
 app.use(router);
 app.use(errorMiddleware);
 
+app.get("/", (req: Request, res: Response) => {
+  res.send("<p>hello from server</p>");
+});
+
 connectDB
   .then(() => {
     console.log("database connected successfully");
@@ -27,4 +31,3 @@ connectDB
   .catch((err) => {
     console.log(err);
   });
-
