@@ -40,10 +40,8 @@ export function TaskSheet({ open, onClose, task }: any) {
     });
 
   // update
-
   const handleForm = async (taskId: string) => {
     const response = await tasksApies.updateTask(taskId, formData);
-    console.log(response);
     if (response.ok === true) {
       addTask(response.data.data);
       await getTasks();
@@ -55,6 +53,8 @@ export function TaskSheet({ open, onClose, task }: any) {
       toast.error(response.status);
     }
   };
+
+
 
   useEffect(() => {
     if (task) {

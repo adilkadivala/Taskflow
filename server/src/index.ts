@@ -20,6 +20,8 @@ app.get("/", (req: Request, res: Response) => {
   return res.json("hello from server");
 });
 
+
+// for local development
 connectDB
   .then(() => {
     console.log("database connected successfully");
@@ -32,4 +34,5 @@ connectDB
     console.log(err);
   });
 
+// for deploying on vercel
 export default app;

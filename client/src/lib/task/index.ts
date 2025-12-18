@@ -44,16 +44,13 @@ class Task {
     }
   }
   // update task
-  async updateTask(taskId: string, taskBody: TaskType) {
+  async updateTask(taskId: TaskType["_id"], taskBody: TaskType) {
     try {
       const response = await axios.put(
         `${this.server_api}/task/api/v1/update-task/${taskId}`,
         { ...taskBody },
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-
-      console.log(response);
-
       return { ok: true, data: response.data };
     } catch (error: any) {
       console.log(error);
@@ -63,7 +60,7 @@ class Task {
     }
   }
   // delete task
-  async deleteTask(taskId: string) {
+  async deleteTask(taskId: TaskType["_id"]) {
     try {
       const response = await axios.delete(
         `${this.server_api}/task/api/v1/delete-task/${taskId}`,
@@ -89,39 +86,34 @@ class Task {
         }
       );
 
-      if (response.status === 200) {
-        return response;
-      }
-      if (response.status === 404) {
-        return { message: "tasks not available to delete" };
-      }
-      if (response.status === 400) {
-        return { message: "body not provided" };
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // search task
-  async seacrhTask(taskTitle: any, description: any) {
+  async searchTask(title?: any, description?: any) {
     try {
       const response = await axios.get(
-        `${this.server_api}/task/api/v1/search-task/searchby?title=${taskTitle}?description=${description}`,
-        { headers: { Authorization: `Bearer ${this.token}` } }
+        `${this.server_api}/task/api/v1/search-task/searchby`,
+        {
+          params: {
+            title,
+            description,
+          },
+          headers: { Authorization: `Bearer ${this.token}` },
+        }
       );
 
-      if (response.status === 404) {
-        return { message: "No any task found" };
-      }
-
-      if (response.status === 402) {
-        return { message: "Please provide title or description to search" };
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // get solo task stats
@@ -131,16 +123,12 @@ class Task {
         `${this.server_api}/task/api/v1/task-stats`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-
-      if (response.status === 404) {
-        return { message: "No any task found" };
-      }
-
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // get recent task
@@ -151,15 +139,12 @@ class Task {
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
 
-      if (response.status === 404) {
-        return { message: "No any task found" };
-      }
-
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // get task activity
@@ -169,19 +154,12 @@ class Task {
         `${this.server_api}/task/api/v1/task-activity/${taskId}`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-
-      if (response.status === 402) {
-        return { message: "params not provided" };
-      }
-      if (response.status === 404) {
-        return { message: "No any task found" };
-      }
-
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // get task activity
@@ -192,37 +170,31 @@ class Task {
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
 
-      if (response.status === 404) {
-        return { message: "No any task found" };
-      }
-
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // filter by status
   async filterTask(status: any, priority: any) {
     try {
       const response = await axios.get(
-        `${this.server_api}/task/api/v1/filter-task/filterby?status=${status}?priority=${priority}`,
-        { headers: { Authorization: `Bearer ${this.token}` } }
+        `${this.server_api}/task/api/v1/filter-task/filterby`,
+        {
+          params: { status, priority },
+          headers: { Authorization: `Bearer ${this.token}` },
+        }
       );
 
-      if (response.status === 404) {
-        return {
-          message:
-            "No any task found based on your filter, try to remove some filters",
-        };
-      }
-
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -236,18 +208,12 @@ class Task {
         { ...taskBody },
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-
-      if (response.status === 200) {
-        return response.data;
-      }
-      if (response.status === 422) {
-        return { message: "incorrect input" };
-      }
-      if (response.status === 400) {
-        return { message: "team not found" };
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // update task
@@ -257,27 +223,18 @@ class Task {
         `${this.server_api}/task/update-task-of-team/${teamId}/${taskId}`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-
-      if (response.status === 200) {
-        return response.data;
-      }
-      if (response.status === 400) {
-        return { message: "team not found" };
-      }
-      if (response.status === 403) {
-        return { message: "task not found in the team" };
-      }
-      if (response.status === 422) {
-        return { message: "incorrect input" };
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // get all tasks of the team
   async getAllTaskOfTheTeam(teamId: any) {
     try {
-      const respnse = await axios.get(
+      const response = await axios.get(
         `${this.server_api}/task/api/v1/get-all-task-of-team/${teamId}`,
         {
           headers: {
@@ -285,26 +242,18 @@ class Task {
           },
         }
       );
-      if (respnse.status === 200) {
-        return respnse.data;
-      }
-      if (respnse.status === 401) {
-        return { msg: "tuo're not member of the team" };
-      }
-      if (respnse.status === 403) {
-        return { msg: "no tasks availabel to dispay in the team" };
-      }
-      if (respnse.status === 404) {
-        return { msg: "team not found" };
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // get all tasks of the team
   async getASpecificTaskOfTheTeam(teamId: any, taskId: any) {
     try {
-      const respnse = await axios.get(
+      const response = await axios.get(
         `${this.server_api}/task/api/v1/get-specific-task-of-team/${teamId}/${taskId}`,
         {
           headers: {
@@ -312,20 +261,12 @@ class Task {
           },
         }
       );
-      if (respnse.status === 200) {
-        return respnse.data;
-      }
-      if (respnse.status === 401) {
-        return { msg: "tuo're not member of the team" };
-      }
-      if (respnse.status === 403) {
-        return { msg: "task not availabel in the team" };
-      }
-      if (respnse.status === 404) {
-        return { msg: "team not found" };
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // delete task
@@ -336,20 +277,12 @@ class Task {
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
 
-      if (response.status === 200) {
-        return response;
-      }
-      if (response.status === 404) {
-        return { message: "team not found" };
-      }
-      if (response.status === 403) {
-        return { message: "task not found in the team" };
-      }
-      if (response.status === 402) {
-        return { message: "params not provided" };
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // delete all task
@@ -362,18 +295,12 @@ class Task {
           headers: { Authorization: `Bearer ${this.token}` },
         }
       );
-
-      if (response.status === 200) {
-        return response;
-      }
-      if (response.status === 404) {
-        return { message: "tasks not available to delete" };
-      }
-      if (response.status === 400) {
-        return { message: "body not provided" };
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // get team task stats
@@ -383,16 +310,12 @@ class Task {
         `${this.server_api}/task/api/v1/task-stats?teamId=${teamId}`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-
-      if (response.status === 404) {
-        return { message: "No any task found" };
-      }
-
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // get recent task
@@ -403,15 +326,12 @@ class Task {
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
 
-      if (response.status === 404) {
-        return { message: "No any task found" };
-      }
-
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // assign a task to the user
@@ -422,29 +342,12 @@ class Task {
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
 
-      if (response.status === 400) {
-        return { message: "task not found" };
-      }
-      if (response.status === 401) {
-        return { message: "team not found" };
-      }
-      if (response.status === 402) {
-        return { message: "task not found in the team" };
-      }
-      if (response.status === 403) {
-        return { message: "task already assigned to a member" };
-      }
-      if (response.status === 404) {
-        return { message: "member not exist in a team" };
-      }
-      if (response.status === 409) {
-        return { message: "task already completed" };
-      }
-      if (response.status === 200) {
-        return response;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
   // assign a task to the user
@@ -455,29 +358,12 @@ class Task {
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
 
-      if (response.status === 400) {
-        return { message: "task not found" };
-      }
-      if (response.status === 401) {
-        return { message: "team not found" };
-      }
-      if (response.status === 402) {
-        return { message: "task not found in the team" };
-      }
-      if (response.status === 403) {
-        return { message: "task not Assigned to anyone !!" };
-      }
-      if (response.status === 404) {
-        return { message: "member not exist in a team" };
-      }
-      if (response.status === 409) {
-        return { message: "task already completed" };
-      }
-      if (response.status === 200) {
-        return response;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 }

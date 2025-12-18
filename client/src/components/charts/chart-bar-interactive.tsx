@@ -1,6 +1,8 @@
 "use client";
 
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { useTaskStore } from "@/store/task";
+import { useMemo } from "react";
 
 import {
   Card,
@@ -18,15 +20,6 @@ import type { ChartConfig } from "@/components/ui/chart";
 
 export const description = "A multiple bar chart";
 
-const chartData = [
-  { month: "Jan", low: 5, medium: 36, high: 55 },
-  { month: "Feb", low: 8, medium: 25, high: 12 },
-  { month: "Mar", low: 2, medium: 18, high: 5 },
-  { month: "Apr", low: 10, medium: 50, high: 20 },
-  { month: "May", low: 3, medium: 7, high: 5 },
-  { month: "Jun", low: 40, medium: 26, high: 15 },
-];
-
 const chartConfig = {
   high: {
     label: "High",
@@ -43,6 +36,22 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ChartBarPriority() {
+  const { tasks } = useTaskStore();
+
+  const chartData = useMemo(() => {
+    const high = tasks.filter((t) => t.priority === "High").length;
+    const medium = tasks.filter((t) => t.priority === "Medium").length;
+    const low = tasks.filter((t) => t.priority === "Low").length;
+
+    return [
+      {
+        label: "Tasks",
+        high,
+        medium,
+        low,
+      },
+    ];
+  }, [tasks]);
   return (
     <Card className="h-full justify-between">
       <CardHeader>
@@ -54,7 +63,7 @@ export function ChartBarPriority() {
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="label"
               tickLine={false}
               tickMargin={10}
               axisLine={false}

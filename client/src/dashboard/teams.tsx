@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,6 +10,16 @@ import {
 import { NewTeamForm } from "@/components/dashboard/team/new-team-form";
 import { Link } from "react-router-dom";
 import { useTeamStore } from "@/store/teams";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Edit, MoreVertical, Trash2 } from "lucide-react";
 
 export default function TeamsPage() {
   const { teams, getTeams } = useTeamStore();
@@ -45,16 +54,53 @@ export default function TeamsPage() {
                           <CardDescription>{team.description}</CardDescription>
                         </div>
                       </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="shrink-0"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" side="right">
+                          <DropdownMenuItem onClick={() => {}}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={() => {}}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </CardHeader>
-                  <CardContent className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {team.members.length} members
-                      </span>
-                      <Button size="sm" variant="outline">
-                        View
-                      </Button>
+                  <CardContent className="pt-0">
+                    <div className="space-y-4">
+                      <div className="flex -space-x-2 overflow-hidden">
+                        <Avatar>
+                          <AvatarImage className="inline-block border-2 border-background" />
+                        </Avatar>
+                        {team.members.length > 3 && (
+                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-[10px]">
+                            +{team.members.length - 3}
+                          </div>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">
+                            Team Progress
+                          </span>
+                          <span>65%</span>
+                        </div>
+                        <Progress value={65} className="h-1.5" />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

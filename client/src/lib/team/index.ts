@@ -38,14 +38,12 @@ class Team {
           },
         }
       );
-      if (response.status === 200) {
-        return response.data;
-      }
-      if (response.status === 403) {
-        return response;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -61,17 +59,12 @@ class Team {
           },
         }
       );
-      if (response.status === 200) {
-        return response.data;
-      }
-      if (response.status === 409) {
-        return response;
-      }
-      if (response.status === 422) {
-        return response;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -86,23 +79,12 @@ class Team {
           },
         }
       );
-      if (response.status === 200) {
-        return response.data;
-      }
-      if (response.status === 402) {
-        return response;
-      }
-      if (response.status === 400) {
-        return response;
-      }
-      if (response.status === 401) {
-        return response;
-      }
-      if (response.status === 422) {
-        return response;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -117,20 +99,12 @@ class Team {
           },
         }
       );
-      if (response.status === 200) {
-        return response.data;
-      }
-      if (response.status === 402) {
-        return response;
-      }
-      if (response.status === 400) {
-        return response;
-      }
-      if (response.status === 401) {
-        return response;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -146,23 +120,12 @@ class Team {
           },
         }
       );
-      if (response.status === 400) {
-        return response.data;
-      }
-      if (response.status === 401) {
-        return response;
-      }
-      if (response.status === 404) {
-        return response;
-      }
-      if (response.status === 409) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -178,20 +141,12 @@ class Team {
           },
         }
       );
-      if (response.status === 403) {
-        return response.data;
-      }
-      if (response.status === 401) {
-        return response;
-      }
-      if (response.status === 404) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -206,14 +161,12 @@ class Team {
           },
         }
       );
-      if (response.status === 200) {
-        return response.data;
-      }
-      if (response.status === 404) {
-        return response;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error:any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 }

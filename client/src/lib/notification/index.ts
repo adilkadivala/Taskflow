@@ -14,14 +14,12 @@ class Notification {
         `${this.server_api}/notification/api/v1/get-all-notifications`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-      if (response.status === 201) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -32,14 +30,12 @@ class Notification {
         `${this.server_api}/notification/api/v1/get-all-unread-notifications`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-      if (response.status === 201) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -50,14 +46,12 @@ class Notification {
         `${this.server_api}/notification/api/v1/mark-read-notification/${taskId}`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-      if (response.status === 201) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -68,14 +62,12 @@ class Notification {
         `${this.server_api}/notification/api/v1/mark-all-read-notification`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-      if (response.status === 404) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -86,14 +78,12 @@ class Notification {
         `${this.server_api}/notification/api/v1/delet-notification/${notificationId}`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-      if (response.status === 404) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 
@@ -104,17 +94,12 @@ class Notification {
         `${this.server_api}/notification/api/v1/delet-notification`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
-      if (response.status === 400) {
-        return response;
-      }
-      if (response.status === 404) {
-        return response;
-      }
-      if (response.status === 200) {
-        return response.data;
-      }
-    } catch (error) {
+      return { ok: true, data: response.data };
+    } catch (error: any) {
       console.log(error);
+      const status = error.response?.status;
+      const message = error.response?.data?.message || "Something went wrong";
+      return { ok: false, status, message };
     }
   }
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Pie, PieChart, Sector, Label } from "recharts";
 import type { PieSectorDataItem } from "recharts/types/polar/Pie";
 import {
@@ -24,14 +23,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTaskStore } from "@/store/task";
+import { useMemo, useState } from "react";
 
 export const description = "Task Status Distribution";
-
-const taskData = [
-  { status: "completed", count: 45, fill: "var(--color-completed)" },
-  { status: "inProgress", count: 30, fill: "var(--color-inProgress)" },
-  { status: "todo", count: 25, fill: "var(--color-todo)" },
-];
 
 const chartConfig = {
   completed: {
@@ -57,10 +52,38 @@ const ChartColors = `
 `;
 
 export function StatusChart() {
-  const id = "task-status-pie";
-  const [activeStatus, setActiveStatus] = React.useState(taskData[0].status);
+  const { tasks } = useTaskStore();
 
-  const activeIndex = React.useMemo(
+  const taskData = useMemo(() => {
+    const completed = tasks.filter((t) => t.status === "Completed").length;
+    const progress = tasks.filter((t) => t.status === "Progress").length;
+    const todo = tasks.filter((t) => t.status === "Todo").length;
+
+    return [
+      {
+        status: "completed",
+        count: completed,
+        fill: "var(--color-completed)",
+      },
+      {
+        status: "inProgress",
+        count: progress,
+        fill: "var(--color-inProgress)",
+      },
+      {
+        status: "todo",
+        count: todo,
+        fill: "var(--color-todo)",
+      },
+    ];
+  }, [tasks]);
+
+  const id = "task-status-pie";
+  const [activeStatus, setActiveStatus] = useState<
+    "completed" | "inProgress" | "todo"
+  >("completed");
+
+  const activeIndex = useMemo(
     () => taskData.findIndex((item) => item.status === activeStatus),
     [activeStatus]
   );
@@ -77,7 +100,12 @@ export function StatusChart() {
           <CardDescription>Overall proportion of tasks</CardDescription>
         </div>
 
-        <Select value={activeStatus} onValueChange={setActiveStatus}>
+        <Select
+          value={activeStatus}
+          onValueChange={(value) =>
+            setActiveStatus(value as "completed" | "inProgress" | "todo")
+          }
+        >
           <SelectTrigger
             className="ml-auto h-7 w-[150px] rounded-lg pl-2.5"
             aria-label="Select a status"

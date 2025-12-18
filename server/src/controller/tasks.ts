@@ -822,14 +822,14 @@ const taskStats = async (
       totalTasks > 0 ? ((completedTasks / totalTasks) * 100).toFixed(2) : 0;
 
     const stats = {
-      "total tasks": totalTasks,
-      "completed tasks": completedTasks,
-      "todo tasks": todoTasks,
-      "in progress tasks": inProgressTasks,
-      "low prority tasks": lowPriorityTasks,
-      "midium priority tasks": mediumPriorityTasks,
-      "high priority tasks": highPriorityTasks,
-      "task completion rate": completionRate,
+      totalTasks,
+      completedTasks,
+      todoTasks,
+      inProgressTasks,
+      lowPriorityTasks,
+      mediumPriorityTasks,
+      highPriorityTasks,
+      completionRate,
     };
 
     return res.status(200).json({

@@ -10,11 +10,11 @@ import { Badge } from "../ui/badge";
 import type { LucideIcon } from "lucide-react";
 
 interface statusCard {
-  title: string;
+  title?: string;
   count: string;
   precentage: string;
-  taststast: string;
-  tastrasio: string;
+  taststast?: string;
+  tastrasio?: string;
   icon?: LucideIcon | undefined;
 }
 
