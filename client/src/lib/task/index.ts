@@ -204,7 +204,7 @@ class Task {
   async createTeamTask(teamId: any, taskBody: TaskType) {
     try {
       const response = await axios.post(
-        `${this.server_api}/task/create-task-of-team/${teamId}`,
+        `${this.server_api}/task/api/v1/create-task-of-team/${teamId}`,
         { ...taskBody },
         { headers: { Authorization: `Bearer ${this.token}` } }
       );

@@ -77,7 +77,7 @@ const getAllTeams = async (
     console.log(userId);
 
     const teams = await Team.find(
-      { members: { $in: [ userId ] } },
+      { members: { $in: [userId] } },
       {
         name: true,
         description: true,
@@ -116,11 +116,19 @@ const getSpecificTeam = async (
 
     const team = await Team.findOne({
       _id: teamId,
-      members: { $in: { userId } },
+      members: userId,
     })
       .select("name description members createdBy tasks")
       .populate("createdBy", "name email")
       .populate("members", "name email")
+      .populate({
+        path: "tasks",
+        select: "title description priority status assignedTo dueDate",
+        populate: {
+          path: "assignedTo",
+          select: "name email",
+        },
+      })
       .lean();
 
     //   lean will help to convert response i plain js object from mongoose documents
@@ -130,8 +138,12 @@ const getSpecificTeam = async (
         .status(403)
         .json({ message: "no such team available to desplay" });
     }
+
+    console.log(team);
+
     return res.status(200).json({ message: "Your team", team });
-  } catch (error) {
+  } catch (error: any) {
+    console.log(error?.message);
     return next(error);
   }
 };
@@ -176,7 +188,7 @@ const updateTeam = async (
     await Activity.create({
       userId,
       teamId,
-      action: "TEAM_UPDATED",
+      action: "UPDATED",
       details: `Team "${updatedTeam?.name}" was updated`,
     });
     return res
@@ -228,7 +240,7 @@ const deleteTeam = async (
     await Activity.create({
       userId,
       teamId,
-      action: "TEAM_DELETED",
+      action: "DELETED",
       details: `Team "${isTeamExist.name}" was deleted`,
     });
     return res.status(200).json({ message: "team deleted successfully" });
@@ -244,49 +256,54 @@ const addMember = async (
   next: NextFunction
 ): Promise<void | Response> => {
   try {
-    const { teamId, memberId } = req.params;
+    const { teamId } = req.params;
+    const { email } = req.body;
+
     // @ts-ignore
     const userId = req.userId;
 
-    if (memberId === userId) {
-      return res
-        .status(400)
-        .json({ message: "Admin is already part of this team" });
+    const member = await User.findOne({ email });
+    if (!member) {
+      return res.status(404).json({ message: "user not found" });
     }
 
-    const isMemberExist = await User.findById(memberId);
-    if (!isMemberExist) {
-      return res.status(401).json({ message: "user not found" });
-    }
+    const memberId = member._id;
 
     const team = await Team.findById(teamId);
     if (!team) {
       return res.status(404).json({ message: "team not found" });
     }
 
-    const alReadyMember = new mongoose.Types.ObjectId(memberId);
+    const isAlreadyMember = team.members.some((id) => id.equals(memberId));
 
-    if (team.members.includes(alReadyMember)) {
-      return res.status(409).json({ message: "User is already a team member" });
+    if (isAlreadyMember) {
+      return res.status(409).json({
+        message: "User is already a team member",
+      });
     }
 
-    await Role.create({ userId: memberId, teamId, role: "member" });
+    await Role.create({
+      userId: memberId,
+      teamId,
+      role: "member",
+    });
 
     await Team.findByIdAndUpdate(
       teamId,
       { $addToSet: { members: memberId } },
       { new: true }
-    )
-      .populate("members", "name email")
-      .lean();
+    );
 
     await Activity.create({
       userId,
       teamId,
-      action: "MEMBER_ADDED",
-      details: `Member "${isMemberExist.name}" was added to team "${team.name}"`,
+      action: "CREATED",
+      details: `Member "${member.name}" was added to team "${team.name}"`,
     });
-    return res.status(200).json({ message: "Member added successfully" });
+
+    return res.status(200).json({
+      message: "Member added successfully",
+    });
   } catch (error) {
     next(error);
   }

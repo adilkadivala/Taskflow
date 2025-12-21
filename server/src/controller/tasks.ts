@@ -357,6 +357,7 @@ const createTaskOfTeam = async (
       dueDate,
       teamId,
       userId,
+      assignedTo: null,
     });
 
     await Team.findByIdAndUpdate(teamId, {
@@ -404,11 +405,8 @@ const getTasksOfTeam = async (
     }
 
     // check the task is exist in a team or not
-    const getAllTasks = await Team.find({ _id: teamId }).populate({
-      path: "tasks",
-      select: "title description status priority assignedTo",
-      populate: { path: "assignedTo", select: "name email" },
-    });
+    const getAllTasks = await Task.find({ teamId });
+
     if (!getAllTasks) {
       return res
         .status(403)
@@ -571,7 +569,7 @@ const deleteAllTaskOfTeam = async (
     // @ts-ignore
     const userId = req.userId;
     const { teamId } = req.params;
-    const { taskIds } = req.body;
+    const taskIds = req.body;
 
     if (!Array.isArray(taskIds) || taskIds.length === 0) {
       return res.status(400).json({ message: "tasks not provided to delete" });

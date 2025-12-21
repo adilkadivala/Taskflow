@@ -23,7 +23,7 @@ import { useTeamStore } from "@/store/teams";
 import { toast } from "sonner";
 
 export function NewTeamForm() {
-  const { getTeams, addTeam } = useTeamStore();
+  const { getTeams, addTeamTask } = useTeamStore();
   const [open, setOpen] = useState<boolean>(false);
   const { formData, bindInput, resetForm } = useForm<TeamType>({
     name: "",
@@ -35,10 +35,10 @@ export function NewTeamForm() {
 
     const response = await teamApies.createTeam(formData);
 
-    if (response.ok === true) {
-      addTeam(response.data);
+    if (response.ok) {
+      addTeamTask(response.data);
       await getTeams();
-      setOpen(!open);
+      setOpen(false);
       toast.success(response.message);
       resetForm();
     }
@@ -67,7 +67,7 @@ export function NewTeamForm() {
             Set up a new team to collaborate with your team members.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">Team Name *</Label>
             <Input

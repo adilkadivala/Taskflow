@@ -18,6 +18,8 @@ interface TaskStore {
   getRecentTasks: () => Promise<void>;
   getTaskActivity: (taskId: string) => Promise<void>;
 
+  addTask: (task: TaskType) => void;
+
   reset: () => void;
 }
 

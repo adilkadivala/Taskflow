@@ -7,7 +7,6 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { tasksApies } from "@/lib/task";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,7 +27,7 @@ import { useEffect } from "react";
 export function TaskSheet({ open, onClose, task }: any) {
   if (!task) return null;
 
-  const { getTasks, addTask } = useTaskStore();
+  const { getTasks } = useTaskStore();
 
   const { formData, bindInput, bindSelect, resetForm, setFormValues } =
     useForm<TaskType>({
@@ -43,7 +42,6 @@ export function TaskSheet({ open, onClose, task }: any) {
   const handleForm = async (taskId: string) => {
     const response = await tasksApies.updateTask(taskId, formData);
     if (response.ok === true) {
-      addTask(response.data.data);
       await getTasks();
       resetForm();
       toast.success("task updated!");
@@ -53,8 +51,6 @@ export function TaskSheet({ open, onClose, task }: any) {
       toast.error(response.status);
     }
   };
-
-
 
   useEffect(() => {
     if (task) {
@@ -70,26 +66,63 @@ export function TaskSheet({ open, onClose, task }: any) {
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-md p-0 h-full">
-        <SheetHeader>
-          <SheetTitle>About the task</SheetTitle>
+      <SheetContent className="sm:max-w-md flex flex-col gap-0 p-0 overflow-hidden border-l">
+        {/* Minimal Header */}
+        <SheetHeader className="p-6 text-left border-b bg-muted/5">
+          <SheetTitle className="text-xl font-semibold tracking-tight">
+            Task Details
+          </SheetTitle>
+          <p className="text-xs text-muted-foreground mt-1">
+            Update task specifics and track progress.
+          </p>
         </SheetHeader>
-        <Separator className="" />
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 items-center h-full text-sm">
-          <form className="flex flex-col gap-4 justify-center h-full w-full">
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="title">Title</Label>
-              <Input {...bindInput("title")} name="title" />
+
+        {/* Scrollable Form Body */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <form className="space-y-6">
+            {/* Title Input */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="title"
+                className="text-[13px] font-medium text-muted-foreground uppercase tracking-wider"
+              >
+                Title
+              </Label>
+              <Input
+                {...bindInput("title")}
+                name="title"
+                placeholder="What needs to be done?"
+                className="h-10 focus-visible:ring-1 focus-visible:ring-primary shadow-none border-muted-foreground/20"
+              />
             </div>
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="description">Description</Label>
-              <Textarea {...bindInput("description")} name="description" />
+
+            {/* Description Textarea */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="description"
+                className="text-[13px] font-medium text-muted-foreground uppercase tracking-wider"
+              >
+                Description
+              </Label>
+              <Textarea
+                {...bindInput("description")}
+                name="description"
+                placeholder="Add more context..."
+                className="min-h-[100px] resize-none focus-visible:ring-1 focus-visible:ring-primary shadow-none border-muted-foreground/20"
+              />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="status">Status</Label>
+
+            {/* Dual Select Row */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex w-full">
+                <Label
+                  htmlFor="status"
+                  className="text-[13px] w-fit font-medium text-muted-foreground uppercase tracking-wider"
+                >
+                  Status - 
+                </Label>
                 <Select {...bindSelect("status")}>
-                  <SelectTrigger name="status" id="status" className="w-full">
+                  <SelectTrigger className="h-9 w-1/2 focus:ring-1 focus:ring-primary shadow-none border-muted-foreground/20">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -99,14 +132,15 @@ export function TaskSheet({ open, onClose, task }: any) {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="priority">Priority</Label>
+              <div className="flex w-full">
+                <Label
+                  htmlFor="priority"
+                  className="text-[13px] w-fit font-medium text-muted-foreground uppercase tracking-wider"
+                >
+                  Priority -
+                </Label>
                 <Select {...bindSelect("priority")}>
-                  <SelectTrigger
-                    name="priority"
-                    id="priority"
-                    className="w-full"
-                  >
+                  <SelectTrigger className="h-9 w-1/2 focus:ring-1 focus:ring-primary shadow-none border-muted-foreground/20">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -118,26 +152,42 @@ export function TaskSheet({ open, onClose, task }: any) {
               </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="reviewer">Due Date</Label>
+            {/* Date Row */}
+            <div className="space-y-2 pt-2">
+              <Label
+                htmlFor="dueDate"
+                className="text-[13px] font-medium text-muted-foreground uppercase tracking-wider"
+              >
+                Due Date
+              </Label>
               <Input
                 id="dueDate"
                 {...bindInput("dueDate")}
                 name="dueDate"
                 type="date"
+                className="h-9 focus-visible:ring-1 focus-visible:ring-primary shadow-none border-muted-foreground/20"
               />
             </div>
           </form>
         </div>
-        <SheetFooter>
+
+        {/* Minimal Footer */}
+        <SheetFooter className="p-6 pt-2 border-t bg-muted/5 flex-row justify-end gap-3 sm:gap-3">
           <SheetClose asChild>
-            <Button type="submit" onClick={() => handleForm(task._id)}>
-              Update
+            <Button
+              variant="ghost"
+              className="font-normal text-muted-foreground hover:text-foreground"
+            >
+              Cancel
             </Button>
           </SheetClose>
-          <SheetClose asChild>
-            <Button variant="outline">Close</Button>
-          </SheetClose>
+          <Button
+            type="submit"
+            className="px-8 shadow-sm transition-all hover:opacity-90"
+            onClick={() => handleForm(task._id)}
+          >
+            Update Task
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

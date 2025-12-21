@@ -21,8 +21,7 @@ import { toast } from "sonner";
 
 export default function TasksPage() {
   const [query, setQuery] = useState("");
-
-  const { tasks, searchTasks, getTasks } = useTaskStore();
+  const { tasks, searchTasks, getTasks, loading } = useTaskStore();
 
   const [openSheet, setOpenSheet] = useState<boolean>(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
@@ -62,6 +61,10 @@ export default function TasksPage() {
   useEffect(() => {
     getTasks();
   }, []);
+
+  if (loading) {
+    return <p>Loading...</p>
+  }
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">

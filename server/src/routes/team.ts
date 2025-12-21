@@ -29,7 +29,7 @@ teamRouter
   .delete(authMiddleware, deleteTeam);
 // add member
 teamRouter
-  .route("/api/v1/add-member/:teamId/:memberId")
+  .route("/api/v1/add-member/:teamId")
   .post(authMiddleware, requireAdmin, addMember);
 // remove member
 teamRouter

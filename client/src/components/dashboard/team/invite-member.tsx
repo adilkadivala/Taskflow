@@ -15,10 +15,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserPlus } from "lucide-react";
+import { teamApies } from "@/lib/team";
+import { useParams } from "react-router-dom";
 
 export function InviteMemberForm() {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
+
+  const { teamId } = useParams();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +31,13 @@ export function InviteMemberForm() {
       setEmail("");
       setOpen(false);
     }
+  };
+
+  // add member to a team
+
+  const inviteMember = async (email: string) => {
+    const response = await teamApies.addMemberToATeam(teamId, email);
+    console.log(response);
   };
 
   return (
@@ -56,7 +67,11 @@ export function InviteMemberForm() {
               required
             />
           </div>
-          <Button type="submit" className="w-full">
+          <Button
+            type="submit"
+            className="w-full"
+            onClick={() => inviteMember(email)}
+          >
             Send invitation
           </Button>
         </form>

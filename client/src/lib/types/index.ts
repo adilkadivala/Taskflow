@@ -9,6 +9,17 @@ export interface TaskType {
   createdAt?: string;
 }
 
+export interface TeamTaskType {
+  _id?: string;
+  title: string;
+  description: string;
+  priority: "Low" | "Medium" | "High";
+  status: "Todo" | "Progress" | "Completed";
+  dueDate: string;
+  createdAt?: string;
+  assignedTo?: { _id: string; name: string; email: string };
+}
+
 export interface TaskStats {
   total_tasks: number;
   completed_tasks: number;
@@ -24,4 +35,8 @@ export interface TeamType {
   _id?: string;
   name: string;
   description: string;
+  members?: string[];
+  tasks?: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }

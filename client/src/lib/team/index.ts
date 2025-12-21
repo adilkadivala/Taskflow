@@ -1,5 +1,6 @@
 import { useAuthStore } from "@/store/auth-store";
 import axios from "axios";
+import type { TeamType } from "../types";
 
 class Team {
   private server_api = import.meta.env.VITE_SERVER_ROOT_API;
@@ -69,10 +70,11 @@ class Team {
   }
 
   //   update team
-  async updateTeam(teamId: any) {
+  async updateTeam(teamId: any, teamBody: TeamType) {
     try {
       const response = await axios.put(
         `${this.server_api}/team/api/v1/update-team/${teamId}`,
+        { ...teamBody },
         {
           headers: {
             Authorization: `Bearer ${this.token}`,
@@ -91,7 +93,7 @@ class Team {
   //   delete team
   async deleteTeam(teamId: any) {
     try {
-      const response = await axios.put(
+      const response = await axios.delete(
         `${this.server_api}/team/api/v1/delete-team/${teamId}`,
         {
           headers: {
@@ -109,11 +111,11 @@ class Team {
   }
 
   //   add member to a team
-  async addMemberToATeam(teamId: any, memberId: any) {
+  async addMemberToATeam(teamId: any, email: string) {
     try {
       const response = await axios.post(
-        `${this.server_api}/team/api/v1/add-member/${teamId}/${memberId}`,
-
+        `${this.server_api}/team/api/v1/add-member/${teamId}}`,
+        { email },
         {
           headers: {
             Authorization: `Bearer ${this.token}`,
@@ -162,7 +164,7 @@ class Team {
         }
       );
       return { ok: true, data: response.data };
-    } catch (error:any) {
+    } catch (error: any) {
       console.log(error);
       const status = error.response?.status;
       const message = error.response?.data?.message || "Something went wrong";
