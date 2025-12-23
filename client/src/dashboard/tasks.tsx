@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { tasksApies } from "@/lib/task";
 import type { TaskType } from "@/lib/types";
+import { useDebounce } from "@/lib/utils";
 import { useTaskStore } from "@/store/task";
 import { Edit, MoreVertical, Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -21,6 +22,8 @@ import { toast } from "sonner";
 
 export default function TasksPage() {
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 500);
+
   const { tasks, searchTasks, getTasks, loading } = useTaskStore();
 
   const [openSheet, setOpenSheet] = useState<boolean>(false);
@@ -45,25 +48,16 @@ export default function TasksPage() {
     }
   };
 
-  // search
-
-  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setQuery(value);
-
-    if (!value) {
-      await getTasks();
-    } else {
-      await searchTasks(value);
-    }
-  };
-
   useEffect(() => {
-    getTasks();
-  }, []);
+    if (!debouncedQuery) {
+      getTasks();
+    } else {
+      searchTasks(debouncedQuery);
+    }
+  }, [debouncedQuery]);
 
   if (loading) {
-    return <p>Loading...</p>
+    return <p>Loading...</p>;
   }
 
   return (
@@ -85,7 +79,7 @@ export default function TasksPage() {
             placeholder="Search tasks..."
             className="pl-10"
             value={query}
-            onChange={handleSearch}
+            onChange={(e) => setQuery(e.target.value)}
           />
         </div>
       </div>

@@ -17,19 +17,39 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NewTaskForm } from "./new-task-form";
 
 import TaskTable from "./tasks-tabel";
+import { teamApies } from "@/lib/team";
+import { toast } from "sonner";
 
 export default function AboutTeam() {
   const { teamId } = useParams();
 
-  const { teamDetail, getATeam, loading, getAllTasks, teamTasks } =
-    useTeamStore();
+  const {
+    teamDetail,
+    teamLoading,
+    teamTasks,
+    teamMembers,
+
+    getATeam,
+    getAllTasks,
+    getAllMembersOfTeam,
+  } = useTeamStore();
+
+  // remove member form team
+  const removeMember = async (teamId: string, memberId: string) => {
+    const response = await teamApies.removeMemberFromATeam(teamId, memberId);
+    if (response.ok) {
+      getAllMembersOfTeam(teamId);
+      toast.success("member removed successfully");
+    }
+  };
 
   useEffect(() => {
     getATeam(teamId);
     getAllTasks(teamId);
+    getAllMembersOfTeam(teamId);
   }, [teamId]);
 
-  if (loading) {
+  if (teamLoading) {
     return <p className="p-6">Loading team...</p>;
   }
 
@@ -66,7 +86,7 @@ export default function AboutTeam() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold">{teamDetail.members.length}</p>
+              <p className="text-3xl font-bold">{teamMembers.length}</p>
               <p className="text-sm text-muted-foreground mt-1">
                 Total Members
               </p>
@@ -76,7 +96,7 @@ export default function AboutTeam() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <p className="text-3xl font-bold">{teamDetail.tasks.length}</p>
+              <p className="text-3xl font-bold">{teamTasks.length}</p>
               <p className="text-sm text-muted-foreground mt-1">Total Tasks</p>
             </div>
           </CardContent>
@@ -95,13 +115,13 @@ export default function AboutTeam() {
               <CardTitle>Team Members</CardTitle>
             </CardHeader>
             <CardContent>
-              {teamDetail.members.map((member, index) => (
-                <div className="flex flex-col gap-4 divide-y">
+              {teamMembers.map((member, index) => (
+                <div className="flex flex-col gap-4 ">
                   <div
                     key={index}
-                    className="flex items-center justify-between py-4 first:pt-0 last:pb-0"
+                    className="flex items-center justify-between first:pt-0 last:pb-0 divide-y"
                   >
-                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                    <div className="flex items-center gap-4 min-w-0 flex-1 py-2">
                       <Avatar
                         key={index}
                         className="size-10 border-2 border-background shadow-sm"
@@ -128,7 +148,12 @@ export default function AboutTeam() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem className="text-red-600">
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={() =>
+                              removeMember(teamDetail._id, member._id!)
+                            }
+                          >
                             Remove Member
                           </DropdownMenuItem>
                         </DropdownMenuContent>

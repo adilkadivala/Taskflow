@@ -21,31 +21,10 @@ import {
   Workflow,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { TeamSwitcher } from "./team-switcher";
 import { aboutUserApies } from "@/lib/user";
 import { useAboutMeStore } from "@/store/about-me";
 
 const data = {
-  // teams
-
-  teams: [
-    // {
-    //   name: "Acme Inc",
-    //   logo: GalleryVerticalEnd,
-    //   plan: "Enterprise",
-    // },
-    // {
-    //   name: "Acme Corp.",
-    //   logo: AudioWaveform,
-    //   plan: "Startup",
-    // },
-    // {
-    //   name: "Evil Corp.",
-    //   logo: Command,
-    //   plan: "Free",
-    // },
-  ],
-
   // main
   navMain: [
     {
@@ -100,7 +79,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
-        {data.teams.length > 0 && <TeamSwitcher teams={data.teams} />}
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>

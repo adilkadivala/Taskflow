@@ -27,6 +27,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useTaskStore } from "@/store/task";
 import { useEffect, useMemo, useState } from "react";
+import { Spinner } from "../ui/spinner";
 
 export const description = "one place for all Task status Visualization";
 
@@ -49,7 +50,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function TasksByStatus() {
-  const { tasks, getTasks } = useTaskStore();
+  const { tasks, getTasks, loading } = useTaskStore();
 
   const chartData = useMemo(() => {
     const map = new Map<
@@ -102,6 +103,15 @@ export function TasksByStatus() {
 
     return chartData.filter((item) => new Date(item.date) >= startDate);
   }, [chartData, timeRange]);
+
+  if (loading) {
+    return (
+      <section className="flex items-center justify-center gap-2.5 text-primary-400">
+        wait...
+        <Spinner className="animate-spin" />
+      </section>
+    );
+  }
 
   return (
     <Card className="@container/card">

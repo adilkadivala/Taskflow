@@ -19,6 +19,11 @@ export interface TeamTaskType {
   createdAt?: string;
   assignedTo?: { _id: string; name: string; email: string };
 }
+export interface TeamMembersType {
+  _id?: string;
+  name: string;
+  email: string;
+}
 
 export interface TaskStats {
   total_tasks: number;

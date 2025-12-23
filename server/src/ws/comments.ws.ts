@@ -88,13 +88,12 @@ export const initCommentWS = () => {
           });
 
           for (const member of team.members) {
-            
             // separating sender and receiver
             if (member.toString() === userId.toString()) continue;
 
             await Notification.create({
               userId: member,
-              fromId: userId, 
+              fromId: userId,
               commentId: savedComment._id,
               taskId: roomId,
               type: "comment",
@@ -117,7 +116,6 @@ export const initCommentWS = () => {
             return;
           }
 
-          // broadcast inside room
           rooms[roomId].forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
               client.send(chatPayload);

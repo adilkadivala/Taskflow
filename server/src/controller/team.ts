@@ -74,8 +74,6 @@ const getAllTeams = async (
     // @ts-ignore
     const userId = req.userId;
 
-    console.log(userId);
-
     const teams = await Team.find(
       { members: { $in: [userId] } },
       {
@@ -138,8 +136,6 @@ const getSpecificTeam = async (
         .status(403)
         .json({ message: "no such team available to desplay" });
     }
-
-    console.log(team);
 
     return res.status(200).json({ message: "Your team", team });
   } catch (error: any) {
@@ -357,6 +353,10 @@ const removeMember = async (
         .json({ message: "Not authorized to remove members" });
     }
 
+    if (memberId === userId) {
+      return res.status(406).json({ messsage: "you can't remove, you're admin" });
+    }
+
     const alReadyMember = new mongoose.Types.ObjectId(memberId);
 
     if (!team.members.includes(alReadyMember)) {
@@ -376,7 +376,7 @@ const removeMember = async (
     await Activity.create({
       userId,
       teamId,
-      action: "MEMBER_REMOVED",
+      action: "DELETED",
       details: `Member "${removedUser?.name}" was removed from team "${team.name}"`,
     });
 

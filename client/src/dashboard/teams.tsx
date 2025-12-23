@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import { TeamSheet } from "@/components/dashboard/team/team-sheet";
 
 export default function TeamsPage() {
-  const { teams, getTeams, loading } = useTeamStore();
+  const { teams, getTeams, teamsLoading } = useTeamStore();
   const navigate = useNavigate();
 
   const [openSheet, setOpenSheet] = useState<boolean>(false);
@@ -54,7 +54,7 @@ export default function TeamsPage() {
     }
   };
 
-  if (loading) {
+  if (teamsLoading) {
     return <p>Loading...</p>;
   }
 

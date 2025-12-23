@@ -27,7 +27,7 @@ import {
   UserMinus,
   UserPlus,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -37,7 +37,7 @@ interface TaskTableProps {
 
 const TaskTable = ({ teamTasks }: TaskTableProps) => {
   const { teamId } = useParams();
-  const { getAllTasks, reset } = useTeamStore();
+  const { getAllTasks } = useTeamStore();
   const navigate = useNavigate();
 
   // State to track selected row IDs
@@ -73,7 +73,6 @@ const TaskTable = ({ teamTasks }: TaskTableProps) => {
     console.log(response);
     if (response.ok) {
       await getAllTasks(teamId);
-      reset();
       toast.success("task deleted successfully");
     }
   };
@@ -85,10 +84,13 @@ const TaskTable = ({ teamTasks }: TaskTableProps) => {
     if (response.ok) {
       await getAllTasks(teamId);
       setSelectedRows([]);
-      reset();
       toast.success("bulk deleted successfully");
     }
   };
+
+  useEffect(() => {
+    getAllTasks(teamId);
+  }, []);
 
   return (
     <div className="rounded-md border bg-card">

@@ -70,7 +70,7 @@ class Team {
   }
 
   //   update team
-  async updateTeam(teamId: any, teamBody: TeamType) {
+  async updateTeam(teamId: TeamType, teamBody: TeamType) {
     try {
       const response = await axios.put(
         `${this.server_api}/team/api/v1/update-team/${teamId}`,
@@ -91,7 +91,7 @@ class Team {
   }
 
   //   delete team
-  async deleteTeam(teamId: any) {
+  async deleteTeam(teamId: TeamType) {
     try {
       const response = await axios.delete(
         `${this.server_api}/team/api/v1/delete-team/${teamId}`,
@@ -111,10 +111,10 @@ class Team {
   }
 
   //   add member to a team
-  async addMemberToATeam(teamId: any, email: string) {
+  async addMemberToATeam(teamId: TeamType["_id"], email: string) {
     try {
       const response = await axios.post(
-        `${this.server_api}/team/api/v1/add-member/${teamId}}`,
+        `${this.server_api}/team/api/v1/add-member/${teamId}`,
         { email },
         {
           headers: {
@@ -132,9 +132,9 @@ class Team {
   }
 
   //   remove member from a team
-  async removeMemberFromATeam(teamId: any, memberId: any) {
+  async removeMemberFromATeam(teamId: TeamType["_id"], memberId: any) {
     try {
-      const response = await axios.post(
+      const response = await axios.delete(
         `${this.server_api}/team/api/v1/remove-member/${teamId}/${memberId}`,
 
         {
@@ -153,7 +153,7 @@ class Team {
   }
 
   // get a specific team
-  async getAllMembersOfTeam(teamId: any) {
+  async getAllMembersOfTeam(teamId: TeamType["_id"]) {
     try {
       const response = await axios.get(
         `${this.server_api}/team/api/v1/get-members/${teamId}`,

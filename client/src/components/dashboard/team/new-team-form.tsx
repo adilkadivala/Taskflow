@@ -34,12 +34,11 @@ export function NewTeamForm() {
     e.preventDefault();
 
     const response = await teamApies.createTeam(formData);
-
     if (response.ok) {
       addTeamTask(response.data);
       await getTeams();
       setOpen(false);
-      toast.success(response.message);
+      toast.success(response.data.message);
       resetForm();
     }
     if (response.ok === false) {

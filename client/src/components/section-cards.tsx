@@ -1,46 +1,62 @@
 import { useTaskStore } from "@/store/task";
 import StatusCards from "./dashboard/status-card";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { HeartCrack, TrendingDown, TrendingUp } from "lucide-react";
 import { useEffect } from "react";
+import { Spinner } from "./ui/spinner";
 
 export function SectionCards() {
-  const { taskStats, getTaskStats } = useTaskStore();
+  const { taskStats, getTaskStats, loading } = useTaskStore();
 
   useEffect(() => {
     getTaskStats();
   }, []);
 
-  if (!taskStats) return null;
+  if (loading) {
+    return (
+      <section className="flex items-center justify-center gap-2.5 text-primary-400">
+        wait...
+        <Spinner className="animate-spin" />
+      </section>
+    );
+  }
+
+  if (!taskStats)
+    return (
+      <section className="flex items-center justify-center gap-2.5 text-red-400">
+        No task stats available to display{" "}
+        <HeartCrack className="animate-caret-blink" />
+      </section>
+    );
 
   const cards = [
     {
       title: "Total Tasks",
-      count: taskStats.totalTasks,
-      precentage: taskStats.completionRate,
+      count: taskStats?.totalTasks,
+      precentage: taskStats?.completionRate,
       icon: TrendingUp,
       taststast: "Overall task count for your workspace.",
       tastrasio: "All tasks across statuses included.",
     },
     {
       title: "To-Do Tasks",
-      count: taskStats.todoTasks,
-      precentage: "",
+      count: taskStats?.todoTasks,
+      precentage: taskStats?.todoTasks?.length,
       icon: TrendingDown,
       taststast: "Tasks waiting to be started.",
       tastrasio: "Focus here to improve progress.",
     },
     {
       title: "In-Progress Tasks",
-      count: taskStats.inProgressTasks,
-      precentage: "",
+      count: taskStats?.inProgressTasks,
+      precentage: taskStats?.inProgressTasks?.length,
       icon: TrendingUp,
       taststast: "Tasks currently being worked on.",
       tastrasio: "Active execution is underway.",
     },
     {
       title: "Completed Tasks",
-      count: taskStats.completedTasks,
-      precentage: taskStats.completionRate,
+      count: taskStats?.completedTasks,
+      precentage: taskStats?.completionRate,
       icon: TrendingUp,
       taststast: "Tasks completed successfully.",
       tastrasio: "Great job keeping momentum!",

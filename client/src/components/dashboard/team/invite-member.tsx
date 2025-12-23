@@ -17,17 +17,19 @@ import { Label } from "@/components/ui/label";
 import { UserPlus } from "lucide-react";
 import { teamApies } from "@/lib/team";
 import { useParams } from "react-router-dom";
+import { useTeamStore } from "@/store/teams";
+import { toast } from "sonner";
 
 export function InviteMemberForm() {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
 
   const { teamId } = useParams();
+  const { getAllMembersOfTeam } = useTeamStore();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email.trim()) {
-      console.log("Adding member:", email);
       setEmail("");
       setOpen(false);
     }
@@ -37,7 +39,11 @@ export function InviteMemberForm() {
 
   const inviteMember = async (email: string) => {
     const response = await teamApies.addMemberToATeam(teamId, email);
-    console.log(response);
+    if (response.ok) {
+      await getAllMembersOfTeam(teamId);
+      setOpen(false);
+      toast.success("invitation sent successfully");
+    }
   };
 
   return (

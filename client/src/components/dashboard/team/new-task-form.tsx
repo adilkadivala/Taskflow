@@ -34,7 +34,7 @@ import { useParams } from "react-router-dom";
 export function NewTaskForm() {
   const { teamId } = useParams();
 
-  const { addTeamTask } = useTeamStore();
+  const { addTeamTask, getAllTasks } = useTeamStore();
   const [open, setOpen] = useState(false);
   const { formData, bindInput, bindSelect, resetForm } = useForm<TaskType>({
     title: "",
@@ -53,6 +53,7 @@ export function NewTaskForm() {
 
     if (response.ok) {
       addTeamTask(response.data);
+      await getAllTasks(teamId);
       resetForm();
       setOpen(false);
       toast.success("task created!");
