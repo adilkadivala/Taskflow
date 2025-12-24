@@ -1,17 +1,29 @@
 import { useTaskStore } from "@/store/task";
 import StatusCards from "./dashboard/status-card";
-import { HeartCrack, TrendingDown, TrendingUp } from "lucide-react";
+import { HeartCrack, TrendingUp } from "lucide-react";
 import { useEffect } from "react";
 import { Spinner } from "./ui/spinner";
 
 export function SectionCards() {
-  const { taskStats, getTaskStats, loading } = useTaskStore();
+  const {
+    taskStats,
+    getTaskStats,
+    getTaskLoading,
+    getRecentTasks,
+    recentTasks,
+    recentStatsLoading,
+  } = useTaskStore();
 
   useEffect(() => {
     getTaskStats();
+    getRecentTasks();
   }, []);
 
-  if (loading) {
+  if (recentStatsLoading) {
+    <p>loading...</p>;
+  }
+
+  if (getTaskLoading) {
     return (
       <section className="flex items-center justify-center gap-2.5 text-primary-400">
         wait...
@@ -38,11 +50,10 @@ export function SectionCards() {
       tastrasio: "All tasks across statuses included.",
     },
     {
-      title: "To-Do Tasks",
-      count: taskStats?.todoTasks,
+      title: "Recent Tasks",
+      count: recentTasks?.length,
       precentage: taskStats?.todoTasks?.length,
-      icon: TrendingDown,
-      taststast: "Tasks waiting to be started.",
+      taststast: "Recently created tasks.",
       tastrasio: "Focus here to improve progress.",
     },
     {

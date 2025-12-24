@@ -8,7 +8,12 @@ interface TaskStore {
   taskStats: any;
   activity: any[];
 
-  loading: boolean;
+  getTaskLoading: boolean;
+  searchTaskLoading: boolean;
+  filterTaskLoading: boolean;
+  taskStatsLoading: boolean;
+  recentStatsLoading: boolean;
+  taskActivityLoading: boolean;
 
   getTasks: () => Promise<void>;
   searchTasks: (title?: string, description?: string) => Promise<void>;
@@ -29,51 +34,68 @@ export const useTaskStore = create<TaskStore>((set) => ({
   taskStats: null,
   activity: [],
 
-  loading: false,
+  getTaskLoading: false,
+  searchTaskLoading: false,
+  filterTaskLoading: false,
+  taskStatsLoading: false,
+  recentStatsLoading: false,
+  taskActivityLoading: false,
 
   getTasks: async () => {
-    set({ loading: true });
+    set({ getTaskLoading: true });
     const response = await tasksApies.getAllTask();
 
     if (response.ok) {
-      set({ tasks: response.data.tasks, loading: false });
+      set({ tasks: response.data.tasks, getTaskLoading: false });
     } else {
-      set({ loading: false });
+      set({ getTaskLoading: false });
     }
   },
 
   searchTasks: async (title, description) => {
-    set({ loading: true });
+    set({ searchTaskLoading: true });
 
     const response = await tasksApies.searchTask(title, description);
 
     if (response.ok) {
-      set({ tasks: response.data.tasks, loading: false });
+      set({ tasks: response.data.tasks, searchTaskLoading: false });
     } else {
-      set({ loading: false });
+      set({ searchTaskLoading: false });
     }
   },
 
   filterTasks: async (status, priority) => {
-    set({ loading: true });
-    const res = await tasksApies.filterTask(status, priority);
-    if (res.ok) set({ tasks: res.data.tasks, loading: false });
-    else set({ loading: false });
+    set({ filterTaskLoading: true });
+    const response = await tasksApies.filterTask(status, priority);
+    if (response.ok)
+      set({ tasks: response.data.tasks, filterTaskLoading: false });
+    else set({ filterTaskLoading: false });
   },
 
   getTaskStats: async () => {
-    const res = await tasksApies.getTaskStats();
-    if (res.ok) set({ taskStats: res.data?.stats });
+    set({ taskStatsLoading: true });
+    const response = await tasksApies.getTaskStats();
+    if (response.ok) {
+      set({ taskStats: response.data?.stats, taskStatsLoading: false });
+    } else set({ taskStatsLoading: false });
   },
 
   getRecentTasks: async () => {
-    const res = await tasksApies.getRecentTask();
-    if (res.ok) set({ recentTasks: res.data.tasks });
+    set({ recentStatsLoading: true });
+    const response = await tasksApies.getRecentTask();
+    if (response.ok) {
+      set({ recentTasks: response.data.recentTasks, recentStatsLoading: false });
+    } else set({ recentStatsLoading: false });
   },
 
   getTaskActivity: async (taskId) => {
-    const res = await tasksApies.getTaskActivity(taskId);
-    if (res.ok) set({ activity: res.data.activity });
+    set({ taskActivityLoading: true });
+    const response = await tasksApies.getTaskActivity(taskId);
+    if (response.ok) {
+      set({ activity: response.data.activity, taskActivityLoading: false });
+    } else {
+      set({ taskActivityLoading: false });
+    }
   },
 
   addTask: (task: TaskType) =>

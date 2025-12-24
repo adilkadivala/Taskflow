@@ -87,6 +87,11 @@ export const initCommentWS = () => {
             message,
           });
 
+          const populatedComment = await savedComment.populate(
+            "userId",
+            "name email"
+          );
+
           for (const member of team.members) {
             // separating sender and receiver
             if (member.toString() === userId.toString()) continue;
@@ -104,11 +109,11 @@ export const initCommentWS = () => {
           const chatPayload = JSON.stringify({
             type: "receive-message",
             payload: {
-              _id: savedComment._id,
+              _id: populatedComment._id,
               taskId: roomId,
-              userId,
-              message,
-              createdAt: savedComment.createdAt,
+              userId: populatedComment.userId,
+              message: populatedComment.message,
+              createdAt: populatedComment.createdAt,
             },
           });
 

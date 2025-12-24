@@ -45,3 +45,11 @@ export interface TeamType {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface CommentType {
+  _id: string;
+  createdAt?: string;
+  message: string;
+  taskId: string;
+  userId?: { _id: string; email: string; name: string };
+}

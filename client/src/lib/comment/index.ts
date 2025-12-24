@@ -57,4 +57,4 @@ class Comment {
   }
 }
 
-export const comemntApies = new Comment();
+export const commentApies = new Comment();

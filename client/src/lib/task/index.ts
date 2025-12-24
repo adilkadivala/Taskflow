@@ -162,7 +162,7 @@ class Task {
       return { ok: false, status, message };
     }
   }
-  // get task activity
+  // get a specific task
   async getSpecificTask(taskId: any) {
     try {
       const response = await axios.get(
@@ -217,10 +217,11 @@ class Task {
     }
   }
   // update task
-  async updateTeamTask(teamId: any, taskId: any) {
+  async updateTeamTask(teamId: any, taskId: any, taskbody: TaskType) {
     try {
       const response = await axios.put(
-        `${this.server_api}/task/update-task-of-team/${teamId}/${taskId}`,
+        `${this.server_api}/task/api/v1/update-task-of-team/${teamId}/${taskId}`,
+        { ...taskbody },
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
       return { ok: true, data: response.data };
@@ -335,12 +336,15 @@ class Task {
     }
   }
   // assign a task to the user
-  async assignATaskToTheMember(teamId: any, taskId: any, memberId: any) {
+  async assignATaskToTheMember(taskId: any, teamId: any, memberId: any) {
     try {
       const response = await axios.post(
         `${this.server_api}/task/api/v1/assign-task/${teamId}/${taskId}/${memberId}`,
+        {},
         { headers: { Authorization: `Bearer ${this.token}` } }
       );
+
+      console.log(response);
 
       return { ok: true, data: response.data };
     } catch (error: any) {

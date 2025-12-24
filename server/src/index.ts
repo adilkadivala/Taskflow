@@ -12,14 +12,20 @@ const SERVER_PORT = process.env.server_port;
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 app.use(router);
 app.use(errorMiddleware);
 
 app.get("/", (req: Request, res: Response) => {
   return res.json("hello from server");
 });
-
 
 // for local development
 connectDB

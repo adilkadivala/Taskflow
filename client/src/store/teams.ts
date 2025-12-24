@@ -37,16 +37,22 @@ interface TeamStore {
   teamDetail: Team | null;
   teamTasks: TeamTaskType[];
   teamMembers: TeamMembersType[];
+  teamRecentTask: any[];
+  teamTaskStats: any;
 
   teamsLoading: boolean;
   teamLoading: boolean;
   tasksLoading: boolean;
   membersLoading: boolean;
+  teamRecentTaskLoading: boolean;
+  teamTaskStatsLoading: boolean;
 
   getTeams: () => Promise<void>;
   getATeam: (teamId: TeamType["_id"]) => Promise<void>;
   getAllTasks: (teamId: TeamType["_id"]) => Promise<void>;
   getAllMembersOfTeam: (teamId: TeamType["_id"]) => Promise<void>;
+  getTeamRecentTasks: (teamId: TeamType["_id"]) => Promise<void>;
+  getTeamTasksStats: (teamId: TeamType["_id"]) => Promise<void>;
 
   addTeam: (team: Team) => void;
   addTeamTask: (task: TaskType) => void;
@@ -59,11 +65,15 @@ export const useTeamStore = create<TeamStore>((set) => ({
   teamTasks: [],
   teamMembers: [],
   teamDetail: null,
+  teamRecentTask: [],
+  teamTaskStats: [],
 
   teamsLoading: false,
   teamLoading: false,
   tasksLoading: false,
   membersLoading: false,
+  teamRecentTaskLoading: false,
+  teamTaskStatsLoading: false,
 
   getTeams: async () => {
     set({ teamsLoading: true });
@@ -99,6 +109,24 @@ export const useTeamStore = create<TeamStore>((set) => ({
       set({ teamMembers: response.data.members });
     }
     set({ membersLoading: false });
+  },
+
+  getTeamRecentTasks: async (teamId) => {
+    set({ teamRecentTaskLoading: true });
+    const response = await tasksApies.getTeamRecentTask(teamId);
+    if (response?.ok) {
+      set({ teamRecentTask: response.data.recentTasks });
+    }
+    set({ teamRecentTaskLoading: false });
+  },
+
+  getTeamTasksStats: async (teamId) => {
+    set({ teamTaskStatsLoading: true });
+    const response = await tasksApies.getTeamTaskStats(teamId);
+    if (response?.ok) {
+      set({ teamTaskStats: response.data.stats });
+    }
+    set({ teamTaskStatsLoading: false });
   },
 
   addTeam: (team) =>

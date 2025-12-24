@@ -21,8 +21,6 @@ import { teamApies } from "@/lib/team";
 export function TeamSheet({ open, onClose, team }: any) {
   if (!team) return null;
 
-  console.log(team);
-
   const { getTeams } = useTeamStore();
 
   const { formData, bindInput, resetForm, setFormValues } = useForm<TeamType>({

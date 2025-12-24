@@ -1,5 +1,12 @@
 "use client";
-import { ChevronLeft, Trash2 } from "lucide-react";
+import {
+  Activity,
+  BadgeQuestionMark,
+  CheckCircle2,
+  ChevronLeft,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,10 +35,16 @@ export default function AboutTeam() {
     teamLoading,
     teamTasks,
     teamMembers,
+    teamRecentTask,
+    teamRecentTaskLoading,
+    teamTaskStats,
+    teamTaskStatsLoading,
 
     getATeam,
     getAllTasks,
     getAllMembersOfTeam,
+    getTeamRecentTasks,
+    getTeamTasksStats,
   } = useTeamStore();
 
   // remove member form team
@@ -47,6 +60,8 @@ export default function AboutTeam() {
     getATeam(teamId);
     getAllTasks(teamId);
     getAllMembersOfTeam(teamId);
+    getTeamRecentTasks(teamId);
+    getTeamTasksStats(teamId);
   }, [teamId]);
 
   if (teamLoading) {
@@ -55,6 +70,13 @@ export default function AboutTeam() {
 
   if (!teamDetail) {
     return <p className="p-6">Team not found</p>;
+  }
+
+  if (teamRecentTaskLoading) {
+    return <p className="p-6">Team recent task loading....</p>;
+  }
+  if (teamTaskStatsLoading) {
+    return <p className="p-6">Team task stats loading....</p>;
   }
 
   return (
@@ -82,25 +104,47 @@ export default function AboutTeam() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold">{teamMembers.length}</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Total Members
-              </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          {
+            label: "Members",
+            value: teamMembers?.length || 0,
+            icon: Users,
+          },
+          {
+            label: "Total Tasks",
+            value: teamTasks?.length || 0,
+            icon: BadgeQuestionMark,
+          },
+          {
+            label: "Completion",
+            value: `${teamTaskStats?.completionRate || 0}%`,
+            icon: CheckCircle2,
+          },
+          {
+            label: "Recent tasks",
+            value: teamRecentTask?.length || 0,
+            icon: Activity,
+          },
+        ].map((stat, i) => (
+          <div
+            key={i}
+            className="group p-6 rounded-2xl border bg-card/50 shadow-sm hover:shadow-md transition-all"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <stat.icon className="w-4 h-4 text-muted-foreground" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                Stat
+              </span>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold">{teamTasks.length}</p>
-              <p className="text-sm text-muted-foreground mt-1">Total Tasks</p>
+            <div className={`text-3xl font-bold tracking-tight text-primary`}>
+              {stat.value}
             </div>
-          </CardContent>
-        </Card>
+            <p className="text-xs font-medium text-muted-foreground mt-1">
+              {stat.label}
+            </p>
+          </div>
+        ))}
       </div>
 
       <Tabs defaultValue="members" className="w-full">
@@ -115,17 +159,14 @@ export default function AboutTeam() {
               <CardTitle>Team Members</CardTitle>
             </CardHeader>
             <CardContent>
-              {teamMembers.map((member, index) => (
+              {teamMembers?.map((member, index) => (
                 <div className="flex flex-col gap-4 ">
                   <div
                     key={index}
                     className="flex items-center justify-between first:pt-0 last:pb-0 divide-y"
                   >
                     <div className="flex items-center gap-4 min-w-0 flex-1 py-2">
-                      <Avatar
-                        key={index}
-                        className="size-10 border-2 border-background shadow-sm"
-                      >
+                      <Avatar className="size-10 border-2 border-background shadow-sm">
                         <AvatarImage src={member.name?.charAt(0)} />
                         <AvatarFallback className="text-[10px]">
                           {member.name?.charAt(0) || "U"}

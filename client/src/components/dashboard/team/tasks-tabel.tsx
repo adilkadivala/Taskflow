@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { tasksApies } from "@/lib/task";
-import type { TeamTaskType, TeamType } from "@/lib/types";
+import type { TaskType, TeamTaskType, TeamType } from "@/lib/types";
 import { useTeamStore } from "@/store/teams";
 import {
   Edit2,
@@ -30,6 +30,8 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { TaskSheet } from "./task-sheet";
+import AssignTask from "./assign-task";
 
 interface TaskTableProps {
   teamTasks: TeamTaskType[];
@@ -43,6 +45,23 @@ const TaskTable = ({ teamTasks }: TaskTableProps) => {
   // State to track selected row IDs
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
+  // sheets
+  const [openTaskDetailSheet, setOpenTaskDetailSheet] =
+    useState<boolean>(false);
+  const [openTaskAssignSheet, setOpenTaskAssignSheet] =
+    useState<boolean>(false);
+
+  const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [selecteTaskToAssing, setSelectTaskToAssign] = useState<any>(null);
+
+  const onTaskClick = (task: TaskType) => {
+    setSelectedTask(task);
+    setOpenTaskDetailSheet(true);
+  };
+  const onAssign = (task: TaskType) => {
+    setSelectTaskToAssign(task);
+    setOpenTaskAssignSheet(true); //
+  };
   // Toggle "Select All"
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -88,156 +107,199 @@ const TaskTable = ({ teamTasks }: TaskTableProps) => {
     }
   };
 
+  // un assign a task
+  const unAssignTask = async (taskId: string, memberId: string) => {
+    const response = await tasksApies.unAssignATaskToTheMember(
+      teamId,
+      taskId,
+      memberId
+    );
+    if (response.ok) {
+      toast.success("task un Assigned successfully");
+      await getAllTasks(teamId);
+    }
+  };
+
   useEffect(() => {
     getAllTasks(teamId);
   }, []);
 
   return (
-    <div className="rounded-md border bg-card">
-      <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[50px]">
-              <Checkbox
-                aria-label="Select all"
-                checked={isAllSelected}
-                onCheckedChange={(checked) => handleSelectAll(!!checked)}
-              />
-            </TableHead>
-            <TableHead className="font-medium">Task</TableHead>
-            <TableHead className="hidden md:table-cell">Status</TableHead>
-            <TableHead className="hidden md:table-cell">Priority</TableHead>
-            <TableHead className="hidden md:table-cell">Assignee</TableHead>
-            <TableHead className="hidden lg:table-cell">Due Date</TableHead>
-            <TableHead className="text-right">
-              {selectedRows.length > 0 ? (
-                <Trash2
-                  className="size-5 text-rose-400 cursor-pointer"
-                  onClick={() => deleteAllTasks(teamId, selectedRows)}
+    <>
+      <div className="rounded-md border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="w-[50px]">
+                <Checkbox
+                  aria-label="Select all"
+                  checked={isAllSelected}
+                  onCheckedChange={(checked) => handleSelectAll(!!checked)}
                 />
-              ) : (
-                "Actions"
-              )}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {teamTasks?.length > 0 ? (
-            teamTasks.map((task: TeamTaskType) => (
-              <TableRow
-                key={task._id}
-                className={`group transition-colors ${
-                  selectedRows.includes(task._id!) ? "bg-muted/50" : ""
-                }`}
-              >
-                <TableCell>
-                  <Checkbox
-                    aria-label="Select row"
-                    checked={selectedRows.includes(task._id!)}
-                    onCheckedChange={(checked) =>
-                      handleSelectRow(task._id!, !!checked)
-                    }
+              </TableHead>
+              <TableHead className="font-medium">Task</TableHead>
+              <TableHead className="hidden md:table-cell">Status</TableHead>
+              <TableHead className="hidden md:table-cell">Priority</TableHead>
+              <TableHead className="hidden md:table-cell">Assignee</TableHead>
+              <TableHead className="hidden lg:table-cell">Due Date</TableHead>
+              <TableHead className="text-right">
+                {selectedRows.length > 0 ? (
+                  <Trash2
+                    className="size-5 text-rose-400 cursor-pointer"
+                    onClick={() => deleteAllTasks(teamId, selectedRows)}
                   />
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-col gap-1 max-w-[250px] md:max-w-[400px]">
-                    <span className="font-medium leading-none group-hover:text-primary transition-colors truncate">
-                      {task.title}
-                    </span>
-                    <span className="text-xs text-muted-foreground line-clamp-1">
-                      {task.description || "No description"}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`h-2 w-2 rounded-full ${
-                        task.status === "Completed"
-                          ? "bg-emerald-500"
-                          : task.status === "Progress"
-                          ? "bg-blue-500"
-                          : "bg-slate-300"
-                      }`}
+                ) : (
+                  "Actions"
+                )}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {teamTasks?.length > 0 ? (
+              teamTasks.map((task: TeamTaskType) => (
+                <TableRow
+                  key={task._id}
+                  onClick={() => onTaskClick(task)}
+                  className={`group transition-colors cursor-pointer ${
+                    selectedRows.includes(task._id!) ? "bg-muted/50" : ""
+                  }`}
+                >
+                  <TableCell>
+                    <Checkbox
+                      aria-label="Select row"
+                      checked={selectedRows.includes(task._id!)}
+                      onCheckedChange={(checked) =>
+                        handleSelectRow(task._id!, !!checked)
+                      }
                     />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {task.status === "Progress" ? "In Progress" : task.status}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1 max-w-[250px] md:max-w-[400px]">
+                      <span className="font-medium leading-none group-hover:text-primary transition-colors truncate">
+                        {task.title}
+                      </span>
+                      <span className="text-xs text-muted-foreground line-clamp-1">
+                        {task.description || "No description"}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`h-2 w-2 rounded-full ${
+                          task.status === "Completed"
+                            ? "bg-emerald-500"
+                            : task.status === "Progress"
+                            ? "bg-blue-500"
+                            : "bg-slate-300"
+                        }`}
+                      />
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {task.status === "Progress"
+                          ? "In Progress"
+                          : task.status}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] font-normal uppercase tracking-tighter h-5 border-muted-foreground/20"
+                    >
+                      {task.priority}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <span className="text-xs text-muted-foreground">
+                      {task.assignedTo?.name || "Unassigned"}
                     </span>
-                  </div>
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  <Badge
-                    variant="outline"
-                    className="text-[10px] font-normal uppercase tracking-tighter h-5 border-muted-foreground/20"
-                  >
-                    {task.priority}
-                  </Badge>
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  <span className="text-xs text-muted-foreground">
-                    {task.assignedTo?.name || "Unassigned"}
-                  </span>
-                </TableCell>
-                <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">
-                  {task.dueDate
-                    ? new Date(task.dueDate).toLocaleDateString()
-                    : "No date"}
-                </TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[160px]">
-                      <DropdownMenuItem
-                        onClick={() =>
-                          navigate(
-                            `/dashboard/teams/${teamId}/tasks/${task._id}`
-                          )
-                        }
-                      >
-                        <ExternalLink className="mr-2 h-3.5 w-3.5" /> Task Chat
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {}}>
-                        {task.assignedTo?.name ? (
-                          <UserMinus className="mr-2 h-3.5 w-3.5" />
-                        ) : (
-                          <UserPlus className="mr-2 h-3.5 w-3.5" />
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">
+                    {task.dueDate
+                      ? new Date(task.dueDate).toLocaleDateString()
+                      : "No date"}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-[160px]">
+                        <DropdownMenuItem
+                          onClick={() =>
+                            navigate(
+                              `/dashboard/teams/${teamId}/tasks/${task._id}`
+                            )
+                          }
+                        >
+                          <ExternalLink className="mr-2 h-3.5 w-3.5" /> Task
+                          Chat
+                        </DropdownMenuItem>
+                        {!task.assignedTo && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation(), onAssign(task);
+                            }}
+                          >
+                            <UserPlus className="mr-2 h-3.5 w-3.5" />
+                            Assign Task
+                          </DropdownMenuItem>
                         )}
-                        {task.assignedTo?.name
-                          ? "Unassign Task"
-                          : "Assign Task"}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {}}>
-                        <Edit2 className="mr-2 h-3.5 w-3.5" /> Edit Task
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => deleteTask(teamId, task._id)}
-                      >
-                        <Trash2 className="mr-2 h-3.5 w-3.5" /> Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        {task.assignedTo && (
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              unAssignTask(task._id!, task.assignedTo?._id!);
+                            }}
+                          >
+                            <UserMinus className="mr-2 h-3.5 w-3.5" />
+                            Unassign Task
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuItem onClick={() => onTaskClick(task)}>
+                          <Edit2 className="mr-2 h-3.5 w-3.5" /> Edit Task
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() => deleteTask(teamId, task._id)}
+                        >
+                          <Trash2 className="mr-2 h-3.5 w-3.5" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  No tasks found for this team.
                 </TableCell>
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell
-                colSpan={7}
-                className="h-24 text-center text-muted-foreground"
-              >
-                No tasks found for this team.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* task sheet */}
+      <TaskSheet
+        open={openTaskDetailSheet}
+        onClose={() => setOpenTaskDetailSheet(false)}
+        task={selectedTask}
+      />
+      {/* assing a task */}
+      <AssignTask
+        open={openTaskAssignSheet}
+        onClose={() => setOpenTaskAssignSheet(false)}
+        task={selecteTaskToAssing}
+      />
+    </>
   );
 };
 

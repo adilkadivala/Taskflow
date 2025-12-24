@@ -161,9 +161,9 @@ export default function TeamsPage() {
                       <div className="space-y-1.5">
                         <div className="flex justify-between text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">
                           <span>Progress</span>
-                          <span className="text-foreground">65%</span>
+                          <span className="text-foreground">0%</span>
                         </div>
-                        <Progress value={65} className="h-1 bg-muted" />
+                        <Progress value={0} className="h-1 bg-muted" />
                       </div>
                     </div>
                   </CardContent>

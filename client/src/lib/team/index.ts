@@ -70,7 +70,7 @@ class Team {
   }
 
   //   update team
-  async updateTeam(teamId: TeamType, teamBody: TeamType) {
+  async updateTeam(teamId: TeamType["_id"], teamBody: TeamType) {
     try {
       const response = await axios.put(
         `${this.server_api}/team/api/v1/update-team/${teamId}`,

@@ -405,7 +405,10 @@ const getTasksOfTeam = async (
     }
 
     // check the task is exist in a team or not
-    const getAllTasks = await Task.find({ teamId });
+    const getAllTasks = await Task.find({ teamId }).populate(
+      "assignedTo",
+      "_id name email"
+    );
 
     if (!getAllTasks) {
       return res
@@ -629,6 +632,7 @@ const assignTask = async (
 ): Promise<Response | void> => {
   try {
     const { taskId, teamId, memberId } = req.params;
+
     // @ts-ignore
     const userId = req.userId;
 
@@ -750,7 +754,7 @@ const unassignTask = async (
         status: "Todo",
       },
       { new: true }
-    ).populate("unassignedTo", "name email");
+    ).populate("assignedTo", "name email");
 
     await Activity.create({
       taskId,
