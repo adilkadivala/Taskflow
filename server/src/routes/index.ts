@@ -10,8 +10,6 @@ import socialAuthRouter from "./social-auth";
 const router: Router = express.Router();
 
 
-
-
 router.use("/auth", authRouter);
 router.use("/social-auth", socialAuthRouter);
 router.use("/task", taskRouter);

@@ -43,7 +43,7 @@ export function SectionCards() {
   const cards = [
     {
       title: "Total Tasks",
-      count: taskStats?.totalTasks,
+      count: taskStats?.totalTasks ,
       precentage: taskStats?.completionRate,
       icon: TrendingUp,
       taststast: "Overall task count for your workspace.",

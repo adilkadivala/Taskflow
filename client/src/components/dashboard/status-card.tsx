@@ -22,24 +22,28 @@ const StatusCards = (cardItems: statusCard) => {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardDescription>{cardItems.title}</CardDescription>
+        <CardDescription>
+          {cardItems ? cardItems.title : "Card title"}
+        </CardDescription>
         <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-          {cardItems.count}
+          {cardItems ? cardItems.count : 0}
         </CardTitle>
         {cardItems.icon && cardItems.precentage && (
           <CardAction>
             <Badge variant="outline">
-              {cardItems.icon && <cardItems.icon />}
-              {cardItems.precentage}
+              {cardItems?.icon && <cardItems.icon />}
+              {cardItems?.precentage}
             </Badge>
           </CardAction>
         )}
       </CardHeader>
       <CardFooter className="flex-col items-start gap-1.5 text-sm">
         <div className="line-clamp-1 flex gap-2 font-medium">
-          {cardItems.taststast}
+          {cardItems ? cardItems.taststast : "task stats"}
         </div>
-        <div className="text-muted-foreground">{cardItems.tastrasio}</div>
+        <div className="text-muted-foreground">
+          {cardItems ? cardItems.tastrasio : "task comletion ration"}
+        </div>
       </CardFooter>
     </Card>
   );

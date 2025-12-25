@@ -7,6 +7,7 @@ import cors from "cors";
 import router from "./routes";
 import { initCommentWS } from "./ws/comments.ws";
 import { errorMiddleware } from "./middleware/error-handler";
+import aiRouter from "./ai/route/ai.prompt";
 
 const SERVER_PORT = process.env.server_port;
 
@@ -21,6 +22,7 @@ app.use(
   })
 );
 app.use(router);
+app.use(aiRouter);
 app.use(errorMiddleware);
 
 app.get("/", (req: Request, res: Response) => {

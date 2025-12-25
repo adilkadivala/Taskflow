@@ -14,6 +14,7 @@ import Profile from "@/dashboard/profile";
 import Notifications from "@/dashboard/notification";
 import AboutTeam from "@/components/dashboard/team/about-team";
 import AboutTeamTask from "@/components/dashboard/team/about-team-task";
+import AiCommandPage from "@/dashboard/ai-command";
 
 const Paths = () => {
   const token = useAuthStore((state) => state.token);
@@ -41,6 +42,7 @@ const Paths = () => {
         <Route path="teams/:teamId" element={<AboutTeam />} />
         <Route path="teams/:teamId/tasks/:taskId" element={<AboutTeamTask />} />
         <Route path="activity" element={<Activity />} />
+        <Route path="ai-command" element={<AiCommandPage />} />
         <Route path="profile" element={<Profile />} />
         <Route path="notification" element={<Notifications />} />
       </Route>

@@ -337,6 +337,8 @@ const createTaskOfTeam = async (
     const { teamId } = req.params;
     const { title, description, priority, status, dueDate } = req.body;
 
+    console.log(req.body);
+
     // checking team
     const isTeamExist = await Team.findById(teamId);
 

@@ -17,6 +17,7 @@ import {
   Activity,
   LayoutDashboard,
   ListChecks,
+  Sparkle,
   Users,
   Workflow,
 } from "lucide-react";
@@ -46,6 +47,11 @@ const data = {
       title: "Activity",
       url: "/dashboard/activity",
       icon: Activity,
+    },
+    {
+      title: "Ai Prompt",
+      url: "/dashboard/ai-command",
+      icon: Sparkle,
     },
   ],
 };

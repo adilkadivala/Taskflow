@@ -17,6 +17,7 @@ const createTeam = async (
 ): Promise<void | Response> => {
   try {
     const { name, description, members, tasks } = req.body;
+
     // @ts-ignore
     const userId = req.userId;
 
@@ -354,7 +355,9 @@ const removeMember = async (
     }
 
     if (memberId === userId) {
-      return res.status(406).json({ messsage: "you can't remove, you're admin" });
+      return res
+        .status(406)
+        .json({ messsage: "you can't remove, you're admin" });
     }
 
     const alReadyMember = new mongoose.Types.ObjectId(memberId);
