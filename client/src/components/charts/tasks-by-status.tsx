@@ -50,7 +50,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function TasksByStatus() {
-  const { tasks, getTasks, loading } = useTaskStore();
+  const { tasks, getTasks, getTaskLoading } = useTaskStore();
 
   const chartData = useMemo(() => {
     const map = new Map<
@@ -104,7 +104,7 @@ export function TasksByStatus() {
     return chartData.filter((item) => new Date(item.date) >= startDate);
   }, [chartData, timeRange]);
 
-  if (loading) {
+  if (getTaskLoading) {
     return (
       <section className="flex items-center justify-center gap-2.5 text-primary-400">
         wait...

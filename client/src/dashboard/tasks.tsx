@@ -24,7 +24,7 @@ export default function TasksPage() {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 500);
 
-  const { tasks, searchTasks, getTasks, loading } = useTaskStore();
+  const { tasks, searchTasks, getTasks, getTaskLoading } = useTaskStore();
 
   const [openSheet, setOpenSheet] = useState<boolean>(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
@@ -56,7 +56,7 @@ export default function TasksPage() {
     }
   }, [debouncedQuery]);
 
-  if (loading) {
+  if (getTaskLoading) {
     return <p>Loading...</p>;
   }
 
